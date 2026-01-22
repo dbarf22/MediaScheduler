@@ -1,0 +1,39 @@
+<html lang="en">
+    <head>
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        <title>Scheduler</title>
+        <script src="script.js"></script>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+
+    <body>
+
+        <div x-init="items = await getSessions()" x-data="{items : [] }" >
+            <ol>
+                <template x-for="session in items" :key="session.Id">
+                    <template x-if="session.SupportsRemoteControl">
+                        <li>
+                            <span x-text="session.Client + ' - ID: ' + session.Id"></span>
+                        </li>
+                    </template>
+                </template>
+            </ol>
+        </div>
+
+        <!-- Loads movies, ids, posters -->
+        <div x-init="result = await getLibrary();" x-data="{result : {Items : []} }" >
+            <ol>
+                <template x-for="movie in result.Items" :key="movie.Id">
+                    <li>
+                        <span x-text="movie.Name + ' - ID: ' + movie.Id"></span>
+                        <br>
+                            <img x-bind:src="`http://100.122.109.103:8096/Items/${movie.Id}/Images/Primary?fillHeight=210&fillWidth=140&quality=96`" alt="movie.Name">
+                        <br>
+                    </li>
+                </template>
+            </ol>
+        </div>
+
+    </body>
+
+</html>
