@@ -19,17 +19,23 @@ def getLibraryContents():
         "sortOrder" : "Ascending",
         "includeItemTypes": "Movie",
         "recursive": "true",
-        "fields" : "PrimaryImageAspectRatio,MediaSourceCount",
-        "imageTypeLimit" : "1",
-        "enableImageTypes" : "Primary",
-        "startIndex" : "0"
     }
     link: str = f"{JELLYFIN_URL}/items"
     response = requests.get(link, headers=headers, params=params)
-    responseJson = response.json()
 
-    filtered = json.loads(responseJson)
+    response = response.json()['Items']
 
+    filter = {"Name", "Id"}
+
+    # for every movie in the response, key is equal to value for every pair movie.items() if that key is in the filter
+    # reminder that ** will actually unpack the dictionary that the k: v for k.. line makes
+    # thus you get the 2 results and the poster link all as an entry in the dictionary instead
+    # and each entry gets added to response
+
+    response = [{**{k: v for k, v in movie.items() if k in filter},
+                 "posterLink" : f"{JELLYFIN_URL}/Items/{movie['Id']}/Images/"
+                                f"Primary?fillHeight=311&fillWidth=207&quality=50"} for movie in response]
+    return response
 
 def getLibraryContentByName(query: str):
     params = {

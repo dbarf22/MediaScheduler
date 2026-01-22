@@ -25,6 +25,11 @@ async function getSessions() {
 }
 
 function playContent(sessionID, contentID) {
-    const url = "http://localhost:8000/library";
+    const url = 'http://localhost:8000/play?contentId=' + contentID +'&sessionId=' + sessionID;
+
+    fetch(url, {
+        method: 'POST'
+    })
+
 }
 

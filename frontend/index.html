@@ -6,33 +6,32 @@
         <link rel="stylesheet" href="styles.css">
     </head>
 
-    <body>
+    <body x-data="{sessions : [], movies : [], selectedSessionId : ''}"
+          x-init="sessions = await getSessions();
+           movies = await getLibrary();">
 
-        <div x-init="items = await getSessions()" x-data="{items : [] }" >
-            <ol>
-                <template x-for="session in items" :key="session.Id">
+            <label for="sessions">Select a session to control: </label>
+
+            <select name="sessions" id="sessions" x-model="selectedSessionId">
+                <option>Select a session from below</option>
+                <template x-for="session in sessions" :key="session.Id">
                     <template x-if="session.SupportsRemoteControl">
-                        <li>
-                            <span x-text="session.Client + ' - ID: ' + session.Id"></span>
-                        </li>
+                        <option x-bind:value="session.Id" x-text="session.Client + ' - ' + session.DeviceName "></option>
                     </template>
                 </template>
-            </ol>
-        </div>
+            </select>
+
+            <button x-on:click="console.log(selectedSessionId)" >Press me</button>
 
         <!-- Loads movies, ids, posters -->
-        <div x-init="result = await getLibrary();" x-data="{result : {Items : []} }" >
-            <ol>
-                <template x-for="movie in result.Items" :key="movie.Id">
-                    <li>
-                        <span x-text="movie.Name + ' - ID: ' + movie.Id"></span>
-                        <br>
-                            <img x-bind:src="`http://100.122.109.103:8096/Items/${movie.Id}/Images/Primary?fillHeight=210&fillWidth=140&quality=96`" alt="movie.Name">
-                        <br>
+            <ul class="container">
+                <template x-for="movie in movies"  >
+                    <li class="movieCard">
+                        <img x-bind:src="movie.posterLink" alt="movie.Name" class="poster">
+                        <button x-on:click="playContent(selectedSessionId, movie.Id)">Play me</button>
                     </li>
                 </template>
-            </ol>
-        </div>
+            </ul>
 
     </body>
 
