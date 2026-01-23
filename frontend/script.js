@@ -1,3 +1,5 @@
+
+
 async function getLibrary() {
     const url = "http://localhost:8000/library";
     try {
@@ -24,12 +26,24 @@ async function getSessions() {
     }
 }
 
-function playContent(sessionID, contentID) {
-    const url = 'http://localhost:8000/play?contentId=' + contentID +'&sessionId=' + sessionID;
-
+function playContent(sessionId, contentId) {
+    const url = 'http://localhost:8000/play?contentId=' + contentId +'&sessionId=' + sessionId;
     fetch(url, {
         method: 'POST'
     })
-
 }
 
+function schedule(date, sessionId, contentId) {
+    const url = 'http://localhost:8000/schedule';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                date: date,
+                sessionId: sessionId,
+                contentId: contentId
+            })
+        })
+}

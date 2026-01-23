@@ -4,35 +4,49 @@
         <title>Scheduler</title>
         <script src="script.js"></script>
         <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     </head>
 
-    <body x-data="{sessions : [], movies : [], selectedSessionId : ''}"
+    <body x-data="{sessions : [], movies : [], selectedSessionId : '', selectedDateTime : '', selectedContentId : ''}"
           x-init="sessions = await getSessions();
            movies = await getLibrary();">
 
-            <label for="sessions">Select a session to control: </label>
+            <header>
+                <label for="sessions">Select a session to control: </label>
 
-            <select name="sessions" id="sessions" x-model="selectedSessionId">
-                <option>Select a session from below</option>
-                <template x-for="session in sessions" :key="session.Id">
-                    <template x-if="session.SupportsRemoteControl">
-                        <option x-bind:value="session.Id" x-text="session.Client + ' - ' + session.DeviceName "></option>
+                <select name="sessions" id="sessions" x-model="selectedSessionId">
+                    <option>Select a session from below</option>
+                    <template x-for="session in sessions" :key="session.Id">
+                        <template x-if="session.SupportsRemoteControl">
+                            <option x-bind:value="session.Id" x-text="session.Client + ' - ' + session.DeviceName "></option>
+                        </template>
                     </template>
-                </template>
-            </select>
+                </select>
 
-            <button x-on:click="console.log(selectedSessionId)" >Press me</button>
+                <button x-on:click="schedule(selectedDateTime, selectedSessionId, selectedContentId)" >Press me</button>
+                <label for="dates">Select a date and time</label>
+                <input name="dates" id="dates" type="text" x-model="selectedDateTime">
+                <script>
+                    flatpickr("#dates",{
+                        altInput: true,
+                        altFormat: "F j, Y, h:i K",
+                        enableTime : true,
+                        dateFormat : "Z",
+                        defaultDate : "today",
+                        minDate : "today"
+                    });
+                </script>
+            </header>
 
         <!-- Loads movies, ids, posters -->
             <ul class="container">
                 <template x-for="movie in movies"  >
                     <li class="movieCard">
                         <img x-bind:src="movie.posterLink" alt="movie.Name" class="poster">
-                        <button x-on:click="playContent(selectedSessionId, movie.Id)">Play me</button>
+                        <button x-on:click="selectedContentId=movie.Id">Play me</button>
                     </li>
                 </template>
             </ul>
-
     </body>
-
 </html>
