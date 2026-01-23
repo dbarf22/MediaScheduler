@@ -8,9 +8,13 @@
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     </head>
 
-    <body x-data="{sessions : [], movies : [], selectedSessionId : '', selectedDateTime : '', selectedContentId : ''}"
+    <body x-data="{sessions : [], movies : [],
+                    selectedSessionId : '', selectedDateTime : '',
+                    selectedContentId : '', selectedContentName : '',
+                    scheduleList : []}"
           x-init="sessions = await getSessions();
-           movies = await getLibrary();">
+           movies = await getLibrary();
+            scheduleList = await getSchedule();">
 
             <header>
                 <label for="sessions">Select a session to control: </label>
@@ -24,7 +28,6 @@
                     </template>
                 </select>
 
-                <button x-on:click="schedule(selectedDateTime, selectedSessionId, selectedContentId)" >Press me</button>
                 <label for="dates">Select a date and time</label>
                 <input name="dates" id="dates" type="text" x-model="selectedDateTime">
                 <script>
@@ -37,14 +40,23 @@
                         minDate : "today"
                     });
                 </script>
+
+                <button x-on:click="schedule(selectedDateTime, selectedSessionId, selectedContentId, selectedContentName)" >Press me</button>
+
             </header>
+
+            <div>
+                <template x-for="item in scheduleList">
+                    <p x-text="item.title + ' is playing at ' + item.date"></p><br>
+                </template>
+            </div>
 
         <!-- Loads movies, ids, posters -->
             <ul class="container">
                 <template x-for="movie in movies"  >
                     <li class="movieCard">
                         <img x-bind:src="movie.posterLink" alt="movie.Name" class="poster">
-                        <button x-on:click="selectedContentId=movie.Id">Play me</button>
+                        <button x-on:click="selectedContentId=movie.Id; selectedContentName=movie.Name">Play me</button>
                     </li>
                 </template>
             </ul>

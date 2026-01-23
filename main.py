@@ -39,6 +39,7 @@ class ScheduleRequest(BaseModel):
     date: str
     contentId: str
     sessionId: str
+    contentName: str
 
 # API Calls
 @app.get("/sessions")
@@ -49,15 +50,28 @@ async def get_sessions():
 async def get_library_content():
     return jellyfin_communicator.getLibraryContents()
 
-@app.post("/play")
-async def play(contentId: str, sessionId: str):
-    return jellyfin_communicator.playContent(contentId, sessionId)
-
 @app.post("/schedule")
 async def scheduleContent(body: ScheduleRequest):
+    if body.contentId == '' or body.sessionId == '' or body.date == '':
+        return {"Error" : "Please provide all required fields"}
     convertedDate = datetime.fromisoformat(body.date)
-    scheduler.add_job(play, 'date', run_date=convertedDate, args=[body.contentId, body.sessionId])
-    print("DONE")
+    scheduler.add_job(play, 'date', run_date=convertedDate, args=[body.contentId, body.sessionId, body.contentName])
+    return {"Success" : "Item added to schedule successfully"}
 
-def printer():
-    print("p")
+@app.get("/schedule")
+async def getSchedule():
+    jobList = []
+    for job in scheduler.get_jobs():
+        jobList.append({
+            'contentId' : job.args[0],
+            'sessionId' : job.args[1],
+            'title' : job.args[2],
+            'date' : job.trigger.run_date.isoformat()
+        })
+    return jobList
+
+
+# Non-api methods
+
+def play(contentId: str, sessionId: str, contentName: str):
+    return jellyfin_communicator.playContent(contentId, sessionId)

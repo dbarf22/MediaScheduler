@@ -3,7 +3,11 @@
 async function getLibrary() {
     const url = "http://localhost:8000/library";
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
         if (!response.ok) {
             throw new Error(`Response: ${response.status}`);
         }
@@ -16,7 +20,11 @@ async function getLibrary() {
 async function getSessions() {
     const url = "http://localhost:8000/sessions";
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
         if (!response.ok) {
             throw new Error(`Response: ${response.status}`);
         }
@@ -26,14 +34,17 @@ async function getSessions() {
     }
 }
 
-function playContent(sessionId, contentId) {
+function playContent(sessionId, contentId, contentName) {
     const url = 'http://localhost:8000/play?contentId=' + contentId +'&sessionId=' + sessionId;
     fetch(url, {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
 }
 
-function schedule(date, sessionId, contentId) {
+function schedule(date, sessionId, contentId, contentName) {
     const url = 'http://localhost:8000/schedule';
         fetch(url, {
             method: 'POST',
@@ -43,7 +54,25 @@ function schedule(date, sessionId, contentId) {
             body: JSON.stringify({
                 date: date,
                 sessionId: sessionId,
-                contentId: contentId
+                contentId: contentId,
+                contentName: contentName
             })
         })
+}
+
+async function getSchedule()  {
+    const url = 'http://localhost:8000/schedule';
+    try {
+        const response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Response: ${response.status}`);
+        }
+        return await response.json()
+    } catch (error) {
+        console.error(error.message)
+    }
 }
