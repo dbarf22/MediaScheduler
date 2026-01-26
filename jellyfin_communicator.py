@@ -11,7 +11,7 @@ headers = {
 
 # API Stuff for getting library content and searching
 
-def getLibraryContents():
+def getLibraryMovies():
     params = {
         "sortBy" : "SortName,ProductionYear",
         "sortOrder" : "Ascending",
@@ -23,7 +23,31 @@ def getLibraryContents():
 
     response = response.json()['Items']
 
-    filter = {"Name", "Id"}
+    filter = {"Name", "Id","Type"}
+
+    # for every movie in the response, key is equal to value for every pair movie.items() if that key is in the filter
+    # reminder that ** will actually unpack the dictionary that the k: v for k.. line makes
+    # thus you get the 2 results and the poster link all as an entry in the dictionary instead
+    # and each entry gets added to response
+
+    response = [{**{k: v for k, v in movie.items() if k in filter},
+                 "posterLink" : f"{JELLYFIN_URL}/Items/{movie['Id']}/Images/"
+                                f"Primary?fillHeight=311&fillWidth=207&quality=50"} for movie in response]
+    return response
+
+def getLibrarySeries():
+    params = {
+        "sortBy" : "SortName,ProductionYear",
+        "sortOrder" : "Ascending",
+        "includeItemTypes": "Series",
+        "recursive": "true",
+    }
+    link: str = f"{JELLYFIN_URL}/items"
+    response = requests.get(link, headers=headers, params=params)
+
+    response = response.json()['Items']
+
+    filter = {"Name", "Id","Type"}
 
     # for every movie in the response, key is equal to value for every pair movie.items() if that key is in the filter
     # reminder that ** will actually unpack the dictionary that the k: v for k.. line makes
@@ -47,7 +71,6 @@ def getLibraryContentByName(query: str):
         "IncludeGenres" : "false",
         "IncludeStudios" : "false",
         "IncludeArtists" : "false",
-        "IncludeItemTypes" : "Movie,Series"
     }
     link: str = f"{JELLYFIN_URL}/items"
     response = requests.get(link, headers=headers, params=params)

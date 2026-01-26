@@ -1,7 +1,22 @@
-
-
 async function getLibrary() {
     const url = "http://localhost:8000/library";
+    try {
+        const response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Response: ${response.status}`);
+        }
+        return await response.json()
+    } catch (error) {
+        console.error(error.message)
+    }
+}
+
+async function getLibraryShows() {
+    const url = "http://localhost:8000/library/series";
     try {
         const response = await fetch(url, {
             headers: {
@@ -44,9 +59,9 @@ function playContent(sessionId, contentId, contentName) {
     })
 }
 
-function schedule(date, sessionId, contentId, contentName) {
+async function schedule(date, sessionId, contentId, contentName) {
     const url = 'http://localhost:8000/schedule';
-        fetch(url, {
+        await fetch(url, {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json'
@@ -74,5 +89,25 @@ async function getSchedule()  {
         return await response.json()
     } catch (error) {
         console.error(error.message)
+    }
+}
+
+async function removeFromSchedule(jobId) {
+    const url = 'http://localhost:8000/schedule';
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                jobId: jobId,
+            })
+        })
+        if (!response.ok) {
+            throw new Error(`Response: ${response.status}`);
+        }
+    } catch (error) {
+        console.log(error.message)
     }
 }

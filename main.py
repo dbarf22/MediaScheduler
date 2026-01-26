@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-
+from zoneinfo import ZoneInfo
 import jellyfin_communicator
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -18,7 +18,6 @@ scheduler = BackgroundScheduler(jobstores=jobstores)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print('HI')
     scheduler.start()
     yield
     scheduler.shutdown()
@@ -41,6 +40,9 @@ class ScheduleRequest(BaseModel):
     sessionId: str
     contentName: str
 
+class DeleteScheduleRequest(BaseModel):
+    jobId: str
+
 # API Calls
 @app.get("/sessions")
 async def get_sessions():
@@ -48,7 +50,11 @@ async def get_sessions():
 
 @app.get("/library")
 async def get_library_content():
-    return jellyfin_communicator.getLibraryContents()
+    return jellyfin_communicator.getLibraryMovies()
+
+@app.get("/library/series")
+async def get_library_series():
+    return jellyfin_communicator.getLibrarySeries()
 
 @app.post("/schedule")
 async def scheduleContent(body: ScheduleRequest):
@@ -62,14 +68,22 @@ async def scheduleContent(body: ScheduleRequest):
 async def getSchedule():
     jobList = []
     for job in scheduler.get_jobs():
+        date = job.trigger.run_date
+        dateString = date.astimezone().strftime("%D, %I:%M %p")
         jobList.append({
             'contentId' : job.args[0],
             'sessionId' : job.args[1],
             'title' : job.args[2],
-            'date' : job.trigger.run_date.isoformat()
+            'date' : dateString,
+            'jobId' : job.id
         })
     return jobList
 
+@app.delete("/schedule")
+async def deleteSchedule(body: DeleteScheduleRequest):
+    if body.jobId == '':
+        return {"Error" : "Please provide a job id"}
+    scheduler.remove_job(body.jobId)
 
 # Non-api methods
 

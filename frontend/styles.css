@@ -1,19 +1,121 @@
-.container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 40px;
-    gap: 20px;
-    align-items: stretch;
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #101010;
+  font-family: "Noto Sans", sans-serif;
+  align-content: center;
+  color: #d2d2d2;
 }
 
-.movieCard {}
+.navbar {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  justify-content: center;
+  background: #20202080;
+  backdrop-filter: blur(20px);
+}
+
+#submitButton {
+  color: #d2d2d2;
+  border-radius: 30px;
+  background-color: transparent;
+  border-color: transparent;
+  cursor: pointer;
+}
+
+#submitButton:hover {
+  background-color: #00a4dc33;
+}
+
+.inputRow {
+  padding: 10px;
+  color: #d2d2d2;
+}
+
+.topInput {
+  background-color: #202020;
+  color: #d2d2d2;
+  border-style: solid;
+  border-radius: 10px;
+  border-width: 1px;
+  text-align: center;
+  font-family: inherit;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  justify-content: center;
+  padding: 40px;
+  gap: 20px;
+}
+
+.movieCard {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  background-color: #202020;
+  height: 100%;
+  border-radius: 10px;
+
+  overflow: hidden;
+}
+
+.movieCard:hover {
+  outline: #00a4dc50 solid 4px;
+  transform: scale(1.02);
+  transition: transform .2s;
+}
+
+.selectedMovieCard {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  background-color: #202020;
+  height: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  outline: #00a4dc solid 2px;
+}
 
 .poster {
-    aspect-ratio: 2/3;
-    object-fit: contain;
+  aspect-ratio: 2/3;
+  object-fit: fill;
+  width: 100%;
+}
+
+.cardTitles {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  color: #d2d2d2;
+}
+
+.scheduleList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  justify-content: center;
+  padding: 40px;
+  gap: 20px;
+}
+
+.scheduleItem {
+  display: flex;
+  flex-direction: column;
+  background-color: #202020;
+  color: #d2d2d2;
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.scheduleItem:hover {
+    outline: #00a4dc50 solid 4px;
 }
 
 ul {
-    list-style-type: none;
+  list-style-type: none;
 }
