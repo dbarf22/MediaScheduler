@@ -49,6 +49,42 @@ async function getSessions() {
     }
 }
 
+async function getSeriesEpisodes(seriesId) {
+    const url = "http://localhost:8000/library/series/episodes?seriesId=" + seriesId;
+    try {
+        const response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+        });
+        if (!response.ok) {
+            throw new Error(`Response: ${response.status}`);
+        }
+        const episodeList = await response.json()
+        const seasonMap = new Map();
+        episodeList.forEach(episode => {
+            let seasonNumber = episode.ParentIndexNumber
+            if (!seasonMap.has(seasonNumber)) {
+                seasonMap.set(seasonNumber, {
+                    season : seasonNumber,
+                    episodes: []
+                })
+            }
+            seasonMap.get(seasonNumber).episodes.push({
+                episode: episode.IndexNumber,
+                id: episode.Id,
+                name: episode.Name
+            })
+        });
+        console.log(Array.from(seasonMap.values()))
+        return Array.from(seasonMap.values())
+
+
+    } catch (error) {
+        console.error(error.message)
+    }
+}
+
 function playContent(sessionId, contentId, contentName) {
     const url = 'http://localhost:8000/play?contentId=' + contentId +'&sessionId=' + sessionId;
     fetch(url, {

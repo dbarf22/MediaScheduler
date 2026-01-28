@@ -29,7 +29,8 @@
     x-data="{sessions : [], movies : [], shows : [],
                     selectedSessionId : '', selectedDateTime : '',
                     selectedContentId : '', selectedContentName : '',
-                    scheduleList : [], contentIsSelected : false, selectedContentPoster : ''}"
+                    scheduleList : [], contentIsSelected : false, selectedContentPoster : '',
+                    selectedSeriesEpisodes : [], contentIsSeries: false, selectedEpisode: ''}"
     x-init="sessions = await getSessions(); movies = await getLibrary();
     scheduleList = await getSchedule(); shows = await getLibraryShows()"
   >
@@ -56,7 +57,7 @@
     </header>
 
     <!-- Load movies ids and posters -->
-    <div :class="contentIsSelected ? 'blur' : ''">
+    <div>
       <div>
         <div class="scheduleList">
           <template x-for="item in scheduleList">
@@ -113,7 +114,9 @@
               <div
                 :class="selectedContentId===show.Id ? 'selectedMovieCard' : 'movieCard'"
                 x-on:click="selectedContentId=show.Id; selectedContentName=show.Name;
-					selectedContentPoster=show.posterLink; contentIsSelected = true; "
+					selectedContentPoster=show.posterLink; contentIsSelected = true;
+					selectedSeriesEpisodes = await getSeriesEpisodes(selectedContentId),
+					contentIsSeries=true;"
               >
                 <img
                   :src="show.posterLink"
@@ -130,17 +133,22 @@
     </div>
 
     <div x-show="contentIsSelected" class="modal">
-      <div class="contentSelectedCard">
+		<div class="blur" x-on:click="selectedContentId=''; selectedContentName='';
+                selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false"></div>
+		
+      <div x-show="!contentIsSeries" class="contentSelectedCard">
         <div class="selectedContentInfoPane">
           <img
             :src="selectedContentPoster"
-            :alt="show.Name"
-            :title="show.Name"
+            :alt="selectedContentName"
+            :title="selectedContentName"
             class="selectedContentPoster"
           />
-          <h1 x-text="selectedContentName" class="selectedContentName"></h1>
-        </div>
+		<h1 x-text="selectedContentName" class="selectedContentName"></h1>
+		</div>
+		  
         <div class="selectedContentControlPane">
+			
           <div class="inputRow">
             <label for="dates">Select a date and time:</label>
             <input
@@ -160,9 +168,64 @@
           >
             Submit
           </button>
+			
           <button
             x-on:click="selectedContentId=''; selectedContentName='';
-                selectedContentPoster=''; contentIsSelected = false; "
+                selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false;"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+		
+		<div x-show="contentIsSeries" class="contentSelectedCard">
+        <div class="selectedContentInfoPane">
+          <img
+            :src="selectedContentPoster"
+            :alt="selectedContentName"
+            :title="selectedContentName"
+            class="selectedContentPoster"
+          />
+		<h1 x-text="selectedContentName" class="selectedContentName"></h1>
+		</div>
+		  
+        <div class="selectedContentControlPane">
+			<div x-show="contentIsSeries" class="seriesInformationPane">
+				<select name="seasons" class="seasonSelector" x-model="selectedEpisode">
+					<option value="">Select an episode</option>
+					<template x-for="season in selectedSeriesEpisodes">
+						<optgroup :label="'Season ' + season.season">
+								<template x-for="episode in season.episodes">
+									<option :value="episode.id" x-text="episode.name"></option>
+								</template>
+						</optgroup>
+					</template>
+				</select>
+			</div>
+			
+          <div class="inputRow">
+            <label for="dates">Select a date and time:</label>
+            <input
+              class="topInput"
+              placeholder="M/D/YYYY HH:MM"
+              name="dates"
+              id="dates"
+              type="date"
+              x-model="selectedDateTime"
+            />
+          </div>
+
+          <button
+            id="submitButton"
+            x-on:click="schedule(selectedDateTime, selectedSessionId, selectedEpisode, selectedContentName);
+                    scheduleList = await getSchedule()"
+          >
+            Submit
+          </button>
+			
+          <button
+            x-on:click="selectedContentId=''; selectedContentName='';
+                selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false;"
           >
             Go Back
           </button>

@@ -73,9 +73,10 @@ def getLibrarySeriesEpisodes(seriesId: str):
 
     response = response.json()['Items']
 
-    filter = {"Name", "Id", "Type", "IndexNumber", "ParentIndexNumber"}
+    filter = {"Name", "Id", "Type","ParentIndexNumber", "IndexNumber", }
 
     response = [{**{k: v for k, v in episode.items() if k in filter}} for episode in response]
+
     return response
 
 # getting the list of active jellyfin sessions
