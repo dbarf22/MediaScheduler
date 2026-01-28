@@ -43,6 +43,9 @@ class ScheduleRequest(BaseModel):
 class DeleteScheduleRequest(BaseModel):
     jobId: str
 
+class SeriesEpisodeRequest(BaseModel):
+    seriesId: str
+
 # API Calls
 @app.get("/sessions")
 async def get_sessions():
@@ -55,6 +58,10 @@ async def get_library_content():
 @app.get("/library/series")
 async def get_library_series():
     return jellyfin_communicator.getLibrarySeries()
+
+@app.get("/library/series/episodes")
+async def get_series_episodes(seriesId: str):
+    return jellyfin_communicator.getLibrarySeriesEpisodes(seriesId)
 
 @app.post("/schedule")
 async def scheduleContent(body: ScheduleRequest):

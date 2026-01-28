@@ -35,6 +35,8 @@ def getLibraryMovies():
                                 f"Primary?fillHeight=311&fillWidth=207&quality=50"} for movie in response]
     return response
 
+# Get all TV shows
+
 def getLibrarySeries():
     params = {
         "sortBy" : "SortName,ProductionYear",
@@ -59,22 +61,22 @@ def getLibrarySeries():
                                 f"Primary?fillHeight=311&fillWidth=207&quality=50"} for movie in response]
     return response
 
-def getLibraryContentByName(query: str):
+#
+
+# Get episodes+seasons for a given series
+def getLibrarySeriesEpisodes(seriesId: str):
     params = {
-        "searchTerm" : query,
-        "imit" : "24",
-        "Fields" : "PrimaryImageAspectRatio,CanDelete,BasicSyncInfo",
-        "Recursive" : "True",
-        "ImageTypeLimit" : "1",
-        "IncludePeople" : "false",
-        "IncludeMedia" : "true",
-        "IncludeGenres" : "false",
-        "IncludeStudios" : "false",
-        "IncludeArtists" : "false",
+        "seriesId" : seriesId,
     }
-    link: str = f"{JELLYFIN_URL}/items"
+    link: str = f"{JELLYFIN_URL}/Shows/{seriesId}/Episodes"
     response = requests.get(link, headers=headers, params=params)
-    return response.json()
+
+    response = response.json()['Items']
+
+    filter = {"Name", "Id", "Type", "IndexNumber", "ParentIndexNumber"}
+
+    response = [{**{k: v for k, v in episode.items() if k in filter}} for episode in response]
+    return response
 
 # getting the list of active jellyfin sessions
 def getActiveSessions():

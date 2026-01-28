@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  padding: 0;
+  padding:0;
   background-color: #101010;
   font-family: "Noto Sans", sans-serif;
   align-content: center;
@@ -13,6 +13,7 @@ body {
   top: 0;
   z-index: 1;
   justify-content: center;
+  padding-inline: 30px;
   background: #20202080;
   backdrop-filter: blur(20px);
 }
@@ -44,11 +45,54 @@ body {
   font-family: inherit;
 }
 
-.container {
+.scheduleList {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   justify-content: center;
   padding: 40px;
+  padding-inline:80px;
+  gap: 20px;
+}
+
+.scheduleItem {
+  display: flex;
+  flex-direction: column;
+  background-color: #202020;
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.scheduleItem:hover {
+  outline: #00a4dc50 solid 4px;
+}
+
+.mediaTypeSelector {
+  display: flex;
+  justify-content: left;
+  padding-inline: 80px;
+  gap: 40px
+}
+
+.selectedMediaTypeButton{
+  color: #d2d2d2;
+  border-radius: 30px;
+  border-color: transparent;
+  cursor: pointer;
+}
+
+.mediaTypeButton{
+  color: #d2d2d233;
+  border-radius: 30px;
+  border-color: transparent;
+  cursor: pointer;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  justify-content: center;
+  padding-inline: 80px;
   gap: 20px;
 }
 
@@ -59,7 +103,6 @@ body {
   background-color: #202020;
   height: 100%;
   border-radius: 10px;
-
   overflow: hidden;
 }
 
@@ -91,31 +134,52 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: center;
-  color: #d2d2d2;
 }
 
-.scheduleList {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 40px;
-  gap: 20px;
+  z-index: 1;
 }
 
-.scheduleItem {
+.contentSelectedCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+
+  background-color: #202020;
+
+  z-index: 10;
+  width: 60%;
+  border: #00a4dc solid 1px;
+  border-radius: 10px;
+  padding: 30px;
+}
+
+.selectedContentInfoPane {
   display: flex;
   flex-direction: column;
-  background-color: #202020;
-  color: #d2d2d2;
-  padding: 20px;
+  align-items: center;
   text-align: center;
-  border-radius: 10px;
 }
 
-.scheduleItem:hover {
-    outline: #00a4dc50 solid 4px;
+.selectedContentPoster {
+  width: 70%;
+  height: auto;
+  border-radius: 15px;
+  overflow: hidden;
 }
 
 ul {
   list-style-type: none;
+}
+
+.blur {
+  filter: blur(20px);
+  z-index: 2;
+  pointer-events: none;
 }
