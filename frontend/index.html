@@ -34,8 +34,7 @@
     x-init="sessions = await getSessions(); movies = await getLibrary();
     scheduleList = await getSchedule(); shows = await getLibraryShows()"
   >
-
-  <!-- NAV BAR --------------------------- -->
+    <!-- NAV BAR --------------------------- -->
     <header class="navbar">
       <div class="inputRow">
         <label for="sessions">Select a session to control: </label>
@@ -141,12 +140,14 @@
       </div>
     </div>
 
-
     <!-- MENU FOR SHOWING SELECTED CONTENT. Split btwn movie and series option -->
 
     <div x-show="contentIsSelected" class="modal">
-		<div class="blur" x-on:click="selectedContentId=''; selectedContentName='';
-                selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false"></div>
+      <div
+        class="blur"
+        x-on:click="selectedContentId=''; selectedContentName='';
+                selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false"
+      ></div>
 
       <!-- MOVIE OPTION ------------------ -->
       <div x-show="!contentIsSeries" class="contentSelectedCard">
@@ -157,15 +158,14 @@
             :title="selectedContentName"
             class="selectedContentPoster"
           />
-		<h1 x-text="selectedContentName" class="selectedContentName"></h1>
-		</div>
-		  
+          <h1 x-text="selectedContentName" class="selectedContentName"></h1>
+        </div>
+
         <div class="selectedContentControlPane">
-			
           <div class="inputRow">
             <label for="dates">Select a date and time:</label>
             <input
-              class="topInput"
+              class="dateInput"
               placeholder="M/D/YYYY HH:MM"
               name="dates"
               id="dates"
@@ -174,27 +174,28 @@
             />
           </div>
 
-          <button
+          <div class="buttonRow">
+            <button
             id="submitButton"
             x-on:click="schedule(selectedDateTime, selectedSessionId, selectedContentId, selectedContentName);
                     scheduleList = await getSchedule()"
           >
             Submit
           </button>
-			
+
           <button
             x-on:click="selectedContentId=''; selectedContentName='';
                 selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false;"
           >
             Go Back
           </button>
+          </div>
         </div>
       </div>
 
+      <!-- SERIES OPTION ----------------- -->
 
-        <!-- SERIES OPTION ----------------- -->
-
-		<div x-show="contentIsSeries" class="contentSelectedCard">
+      <div x-show="contentIsSeries" class="contentSelectedCard">
         <div class="selectedContentInfoPane">
           <img
             :src="selectedContentPoster"
@@ -202,57 +203,66 @@
             :title="selectedContentName"
             class="selectedContentPoster"
           />
-		<h1 x-text="selectedContentName" class="selectedContentName"></h1>
-		</div>
-		  
+          <h1 x-text="selectedContentName" class="selectedContentName"></h1>
+        </div>
+
         <div class="selectedContentControlPane">
-			<div x-show="contentIsSeries" class="seriesInformationPane">
-				<select name="seasons" class="seasonSelector" x-model="selectedEpisode">
-					<option value="">Select an episode</option>
-					<template x-for="season in selectedSeriesEpisodes">
-						<optgroup :label="'Season ' + season.season">
-								<template x-for="episode in season.episodes">
-									<option :value="episode.id" x-text="episode.name"></option>
-								</template>
-						</optgroup>
-					</template>
-				</select>
-			</div>
-
-
-			
-          <div class="inputRow">
-            <label for="dates">Select a date and time:</label>
-            <input
-              class="topInput"
-              placeholder="M/D/YYYY HH:MM"
-              name="dates"
-              id="dates"
-              type="date"
-              x-model="selectedDateTime"
-            />
+          <div class="selectEpisode">
+            <label for="seasons">Select an episode: </label>
+          <select
+              name="seasons"
+              class="seasonSelector"
+              x-model="selectedEpisode"
+              id="seasons"
+            >
+              <option value="">--choose--</option>
+              <template x-for="season in selectedSeriesEpisodes">
+                <optgroup :label="'Season ' + season.season">
+                  <template x-for="episode in season.episodes">
+                    <option :value="episode.id" x-text="episode.name"></option>
+                  </template>
+                </optgroup>
+              </template>
+            </select>
           </div>
 
-          <button
-            id="submitButton"
-            x-on:click="schedule(selectedDateTime, selectedSessionId, selectedEpisode, selectedContentName);
-                    scheduleList = await getSchedule()"
-          >
-            Submit
-          </button>
-			
-          <button
-            x-on:click="selectedContentId=''; selectedContentName='';
-                selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false;"
-          >
-            Go Back
-          </button>
+            <div class="inputRow">
+              <label for="dates">Select a date and time:</label>
+              <input
+                class="dateInput"
+                placeholder="M/D/YYYY HH:MM"
+                name="dates"
+                id="dates"
+                type="date"
+                x-model="selectedDateTime"
+              />
+            </div>
+
+            <div class="buttonRow">
+              <button
+                x-on:click="selectedContentId=''; selectedContentName='';
+                  selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false;"
+                class="backButton"
+              >
+                Go Back
+              </button>
+
+                <button
+                id="submitButton"
+                x-on:click="schedule(selectedDateTime, selectedSessionId, selectedEpisode, selectedContentName);
+                      scheduleList = await getSchedule()"
+              >
+                Submit
+              </button>
+
+
+            </div>
         </div>
       </div>
     </div>
 
-  <!-- Flatpickr script -->
-  <!-- todo: Check that it works after selecting multiple shows & movies -->
+    <!-- Flatpickr script -->
+    <!-- todo: Check that it works after selecting multiple shows & movies -->
 
     <script>
       flatpickr("#dates", {

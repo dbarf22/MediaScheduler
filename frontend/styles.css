@@ -18,18 +18,6 @@ body {
   backdrop-filter: blur(20px);
 }
 
-#submitButton {
-  color: #d2d2d2;
-  border-radius: 30px;
-  background-color: transparent;
-  border-color: transparent;
-  cursor: pointer;
-}
-
-#submitButton:hover {
-  background-color: #00a4dc33;
-}
-
 .inputRow {
   padding: 10px;
   color: #d2d2d2;
@@ -44,6 +32,17 @@ body {
   text-align: center;
   font-family: inherit;
 }
+
+.dateInput {
+  background-color: #202020;
+  color: #d2d2d2;
+  border-style: solid;
+  border-radius: 10px;
+  border-width: 1px;
+  text-align: center;
+  font-family: inherit;
+}
+
 
 .scheduleList {
   display: grid;
@@ -147,28 +146,27 @@ body {
 
 .contentSelectedCard {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: row;
+  column-gap: 15px;
   background-color: #202020;
   z-index: 3;
   border: #00a4dc solid 1px;
   border-radius: 10px;
   padding: 30px;
-  height: 40vh;
-  width: 40vw;
+  max-height: 40vh;
+  max-width: 70vw;
   font-size:1vw;
-  padding:40px;
 }
 
 .selectedContentInfoPane {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-content: flex-start;
   justify-content: center;
-  flex: 1;
   height: 100%;
   width: 100%;
   overflow: hidden;
+  max-height: 40vh;
 }
 
 .selectedContentPoster {
@@ -180,17 +178,98 @@ body {
 }
 
 .selectedContentName {
-  font-size: 1.2em;
+  font-size: 24px;
   text-align: center;
 }
 
 .selectedContentControlPane {
-  flex:1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: flex-start;
+  flex-shrink: 1;
+  max-width: 50%;
+}
+
+.selectEpisode {
+  display:flex;
+  flex-direction: row;
+  flex-shrink: 1;
+  padding-right:10px
+}
+
+.selectEpisode select {
+  flex-grow: 1;
+  flex-shrink: 1;
+  min-width: 0;
+  background-color: #202020;
+  color: #d2d2d2;
+  border-style: solid;
+  border-radius: 10px;
+  border-width: 1px;
+  text-align: center;
+  font-family: inherit;
+}
+
+.selectEpisode label {
+  text-wrap: nowrap;
+  padding-right: 10px;
+  font-size: 16px
+}
+
+.inputRow {
+  display:flex;
+  flex-direction: row;
+  padding-left: 0;
+  flex-wrap: wrap
+}
+
+.inputRow label {
+  flex-grow: 3;
+  text-wrap: nowrap;
+  padding-right: 10px;
+  font-size: 16px
+}
+
+.inputRow input {
+  flex-grow: 3;
+  text-wrap: nowrap;
+  padding-right: 10px;
+  min-width: 0;
+}
+
+.buttonRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 10px 0 10px;
+
+}
+
+.buttonRow button {
+  color: #d2d2d2;
+  border-radius: 30px;
+  background-color: transparent;
+  border-color: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 16px
+}
+
+.buttonRow button:hover {
+  background-color: #00a4dc33;
+}
+
+.seasonSelector {
+  flex-shrink:1 ;
 }
 
 ul {
   list-style-type: none;
 }
+
+
 
 .blur {
   z-index: 2;
