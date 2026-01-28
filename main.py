@@ -68,7 +68,12 @@ async def scheduleContent(body: ScheduleRequest):
     if body.contentId == '' or body.sessionId == '' or body.date == '':
         return {"Error" : "Please provide all required fields"}
     convertedDate = datetime.fromisoformat(body.date)
-    scheduler.add_job(play, 'date', run_date=convertedDate, args=[body.contentId, body.sessionId, body.contentName])
+
+    query = jellyfin_communicator.getEpisodeName(body.contentId)
+    episode = query[0]
+    title = f"{episode["SeriesName"]}: S{episode["ParentIndexNumber"]}E{episode["IndexNumber"]}"
+
+    scheduler.add_job(play, 'date', run_date=convertedDate, args=[body.contentId, body.sessionId, title])
     return {"Success" : "Item added to schedule successfully"}
 
 @app.get("/schedule")

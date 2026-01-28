@@ -79,6 +79,15 @@ def getLibrarySeriesEpisodes(seriesId: str):
 
     return response
 
+def getEpisodeName(seriesId: str):
+    params = {
+        "ids" : seriesId,
+    }
+    link: str = f"{JELLYFIN_URL}/Items"
+    response = requests.get(link, headers=headers, params=params)
+    response = response.json()['Items']
+    return response
+
 # getting the list of active jellyfin sessions
 def getActiveSessions():
     params = {}
