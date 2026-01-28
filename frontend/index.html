@@ -17,6 +17,12 @@
       href="https://npmcdn.com/flatpickr/dist/themes/dark.css"
     />
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body
@@ -49,102 +55,100 @@
       </div>
     </header>
 
-
-
     <!-- Load movies ids and posters -->
     <div :class="contentIsSelected ? 'blur' : ''">
       <div>
-      <div class="scheduleList" >
-      <template x-for="item in scheduleList">
-        <div class="scheduleItem">
-          <strong x-text="item.title" class="scheduleItemTitle"></strong>
-          <i
-            x-text="'scheduled to play at ' + item.date"
-            class="scheduleDescription"
-          ></i>
-          <button
-            x-on:click="removeFromSchedule(item.jobId); scheduleList = await getSchedule() "
-          >
-            Remove
-          </button>
-        </div>
-      </template>
-    </div>
-
-      <div x-data="{showMovies : true}" >
-        <div class="mediaTypeSelector">
-          <h1
-            :class="showMovies ? 'selectedMediaTypeButton' : 'mediaTypeButton'"
-            x-on:click="showMovies = true"
-          >
-            Movies
-          </h1>
-          <h1
-            :class="!showMovies ? 'selectedMediaTypeButton' : 'mediaTypeButton'"
-            x-on:click="showMovies = false"
-          >
-            Series
-          </h1>
-        </div>
-        <ul class="container" x-show="showMovies">
-          <template x-for="movie in movies" :key="movie.Id">
-            <div
-              :class="selectedContentId===movie.Id ? 'selectedMovieCard' : 'movieCard'"
-              x-on:click="selectedContentId=movie.Id; selectedContentName=movie.Name;
-                selectedContentPoster=movie.posterLink; contentIsSelected = true"
-            >
-              <img
-                :src="movie.posterLink"
-                :alt="movie.Name"
-                :title="movie.Name"
-                class="poster"
-              />
-              <p x-text="movie.Name" class="cardTitles"></p>
-            </div>
-          </template>
-        </ul>
-
-        <ul class="container" x-show="!showMovies">
-          <template x-for="show in shows" :key="show.Id">
-            <div
-              :class="selectedContentId===show.Id ? 'selectedMovieCard' : 'movieCard'"
-              x-on:click="selectedContentId=show.Id; selectedContentName=show.Name;
-                selectedContentPoster=show.posterLink; contentIsSelected = true; "
-            >
+        <div class="scheduleList">
+          <template x-for="item in scheduleList">
+            <div class="scheduleItem">
+              <strong x-text="item.title" class="scheduleItemTitle"></strong>
+              <i
+                x-text="'scheduled to play at ' + item.date"
+                class="scheduleDescription"
+              ></i>
+              <button
+                x-on:click="removeFromSchedule(item.jobId); scheduleList = await getSchedule() "
               >
-              <img
-                :src="show.posterLink"
-                :alt="show.Name"
-                :title="show.Name"
-                class="poster"
-              />
-              <p x-text="show.Name" class="cardTitles"></p>
+                Remove
+              </button>
             </div>
           </template>
-        </ul>
+        </div>
+
+        <div x-data="{showMovies : true}">
+          <div class="mediaTypeSelector">
+            <h1
+              :class="showMovies ? 'selectedMediaTypeButton' : 'mediaTypeButton'"
+              x-on:click="showMovies = true"
+            >
+              Movies
+            </h1>
+            <h1
+              :class="!showMovies ? 'selectedMediaTypeButton' : 'mediaTypeButton'"
+              x-on:click="showMovies = false"
+            >
+              Series
+            </h1>
+          </div>
+          <ul class="container" x-show="showMovies">
+            <template x-for="movie in movies" :key="movie.Id">
+              <div
+                :class="selectedContentId===movie.Id ? 'selectedMovieCard' : 'movieCard'"
+                x-on:click="selectedContentId=movie.Id; selectedContentName=movie.Name;
+					selectedContentPoster=movie.posterLink; contentIsSelected = true"
+              >
+                <img
+                  :src="movie.posterLink"
+                  :alt="movie.Name"
+                  :title="movie.Name"
+                  class="poster"
+                />
+                <p x-text="movie.Name" class="cardTitles"></p>
+              </div>
+            </template>
+          </ul>
+
+          <ul class="container" x-show="!showMovies">
+            <template x-for="show in shows" :key="show.Id">
+              <div
+                :class="selectedContentId===show.Id ? 'selectedMovieCard' : 'movieCard'"
+                x-on:click="selectedContentId=show.Id; selectedContentName=show.Name;
+					selectedContentPoster=show.posterLink; contentIsSelected = true; "
+              >
+                <img
+                  :src="show.posterLink"
+                  :alt="show.Name"
+                  :title="show.Name"
+                  class="poster"
+                />
+                <p x-text="show.Name" class="cardTitles"></p>
+              </div>
+            </template>
+          </ul>
+        </div>
       </div>
     </div>
-    </div>
 
-    <div class="modal">
-      <div x-show="contentIsSelected" class="contentSelectedCard">
-          <div class="selectedContentInfoPane">
-            <img
-                :src="selectedContentPoster"
-                :alt="show.Name"
-                :title="show.Name"
-                class="selectedContentPoster"
-              />
+    <div x-show="contentIsSelected" class="modal">
+      <div class="contentSelectedCard">
+        <div class="selectedContentInfoPane">
+          <img
+            :src="selectedContentPoster"
+            :alt="show.Name"
+            :title="show.Name"
+            class="selectedContentPoster"
+          />
           <h1 x-text="selectedContentName" class="selectedContentName"></h1>
-          </div>
-          <div class="selectedContentControlPane">
-            <div class="inputRow">
+        </div>
+        <div class="selectedContentControlPane">
+          <div class="inputRow">
             <label for="dates">Select a date and time:</label>
             <input
               class="topInput"
+              placeholder="M/D/YYYY HH:MM"
               name="dates"
               id="dates"
-              type="text"
+              type="date"
               x-model="selectedDateTime"
             />
           </div>
@@ -156,21 +160,22 @@
           >
             Submit
           </button>
-            <button x-on:click="selectedContentId=''; selectedContentName='';
-                selectedContentPoster=''; contentIsSelected = false; ">
-              Go Back
-            </button>
-          </div>
+          <button
+            x-on:click="selectedContentId=''; selectedContentName='';
+                selectedContentPoster=''; contentIsSelected = false; "
+          >
+            Go Back
+          </button>
+        </div>
       </div>
     </div>
 
     <script>
       flatpickr("#dates", {
         altInput: true,
-        altFormat: "F j, Y, h:i K",
+        altFormat: "n/j/Y, h:i K",
         enableTime: true,
         dateFormat: "Z",
-        defaultDate: "today",
         minDate: "today",
       });
     </script>
