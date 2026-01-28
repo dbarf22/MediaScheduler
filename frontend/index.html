@@ -34,6 +34,8 @@
     x-init="sessions = await getSessions(); movies = await getLibrary();
     scheduleList = await getSchedule(); shows = await getLibraryShows()"
   >
+
+  <!-- NAV BAR --------------------------- -->
     <header class="navbar">
       <div class="inputRow">
         <label for="sessions">Select a session to control: </label>
@@ -56,7 +58,7 @@
       </div>
     </header>
 
-    <!-- Load movies ids and posters -->
+    <!-- Load movies ids and posters --------------------- -->
     <div>
       <div>
         <div class="scheduleList">
@@ -76,6 +78,8 @@
           </template>
         </div>
 
+        <!-- CHOOSE SERIES AND MOVIES BAR -------------------->
+
         <div x-data="{showMovies : true}">
           <div class="mediaTypeSelector">
             <h1
@@ -91,6 +95,9 @@
               Series
             </h1>
           </div>
+
+          <!-- POPULATED MOVIE CARDS ----------- -->
+
           <ul class="container" x-show="showMovies">
             <template x-for="movie in movies" :key="movie.Id">
               <div
@@ -108,6 +115,8 @@
               </div>
             </template>
           </ul>
+
+          <!-- POPULATED SERIES CARDS --------------- -->
 
           <ul class="container" x-show="!showMovies">
             <template x-for="show in shows" :key="show.Id">
@@ -132,10 +141,14 @@
       </div>
     </div>
 
+
+    <!-- MENU FOR SHOWING SELECTED CONTENT. Split btwn movie and series option -->
+
     <div x-show="contentIsSelected" class="modal">
 		<div class="blur" x-on:click="selectedContentId=''; selectedContentName='';
                 selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false"></div>
-		
+
+      <!-- MOVIE OPTION ------------------ -->
       <div x-show="!contentIsSeries" class="contentSelectedCard">
         <div class="selectedContentInfoPane">
           <img
@@ -177,7 +190,10 @@
           </button>
         </div>
       </div>
-		
+
+
+        <!-- SERIES OPTION ----------------- -->
+
 		<div x-show="contentIsSeries" class="contentSelectedCard">
         <div class="selectedContentInfoPane">
           <img
@@ -232,6 +248,9 @@
         </div>
       </div>
     </div>
+
+  <!-- Flatpickr script -->
+  <!-- todo: Check that it works after selecting multiple shows & movies -->
 
     <script>
       flatpickr("#dates", {
