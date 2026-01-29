@@ -32,7 +32,7 @@
                     scheduleList : [], contentIsSelected : false, selectedContentPoster : '',
                     selectedSeriesEpisodes : [], contentIsSeries: false, selectedEpisode: ''}"
     x-init="sessions = await getSessions(); movies = await getLibrary();
-    scheduleList = await getSchedule(); shows = await getLibraryShows()"
+    scheduleList = await getSchedule(); shows = await getLibraryShows(); console.log(sessions)"
   >
     <!-- NAV BAR --------------------------- -->
     <header class="navbar">
@@ -49,7 +49,7 @@
             <template x-if="session.SupportsRemoteControl">
               <option
                 x-bind:value="session.Id"
-                x-text="session.Client + ' - ' + session.DeviceName "
+                x-text="session.Client + ' - ' + session.DeviceName"
               ></option>
             </template>
           </template>
@@ -171,14 +171,24 @@
               id="dates"
               type="date"
               x-model="selectedDateTime"
+               x-init="flatpickr('#dates', {
+        altInput: true,
+        altFormat: 'n/j/Y, h:i K',
+        enableTime: true,
+        dateFormat: 'Z',
+        minDate: 'today',
+        onChange: function(selectedDates, dateStr, instance) {selectedDateTime = dateStr; console.log(dateStr)}
+      });"
             />
           </div>
 
           <div class="buttonRow">
             <button
-            id="submitButton"
+            class="submitButton"
             x-on:click="schedule(selectedDateTime, selectedSessionId, selectedContentId, selectedContentName);
                     scheduleList = await getSchedule()"
+            :disabled="!selectedDateTime || !selectedSessionId "
+
           >
             Submit
           </button>
@@ -227,14 +237,22 @@
           </div>
 
             <div class="inputRow">
-              <label for="dates">Select a date and time:</label>
+              <label for="seriesDates">Select a date and time:</label>
               <input
                 class="dateInput"
                 placeholder="M/D/YYYY HH:MM"
                 name="dates"
-                id="dates"
+                id="seriesDates"
                 type="date"
                 x-model="selectedDateTime"
+                x-init="flatpickr('#seriesDates', {
+        altInput: true,
+        altFormat: 'n/j/Y, h:i K',
+        enableTime: true,
+        dateFormat: 'Z',
+        minDate: 'today',
+        onChange: function(selectedDates, dateStr, instance) {selectedDateTime = dateStr; console.log(dateStr)}
+      });"
               />
             </div>
 
@@ -248,9 +266,11 @@
               </button>
 
                 <button
-                id="submitButton"
-                x-on:click="schedule(selectedDateTime, selectedSessionId, selectedEpisode, selectedContentName);
+                class="submitButton"
+                x-on:click="scheduleShow(selectedDateTime, selectedSessionId, selectedEpisode, selectedContentName);
                       scheduleList = await getSchedule()"
+              :disabled="!selectedDateTime || !selectedSessionId || !selectedEpisode"
+
               >
                 Submit
               </button>
@@ -265,13 +285,8 @@
     <!-- todo: Check that it works after selecting multiple shows & movies -->
 
     <script>
-      flatpickr("#dates", {
-        altInput: true,
-        altFormat: "n/j/Y, h:i K",
-        enableTime: true,
-        dateFormat: "Z",
-        minDate: "today",
-      });
+
     </script>
+
   </body>
 </html>

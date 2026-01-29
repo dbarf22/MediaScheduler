@@ -111,6 +111,22 @@ async function schedule(date, sessionId, contentId, contentName) {
         })
 }
 
+async function scheduleShow(date, sessionId, contentId, contentName) {
+    const url = 'http://localhost:8000/schedule/show';
+        await fetch(url, {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                date: date,
+                sessionId: sessionId,
+                contentId: contentId,
+                contentName: contentName
+            })
+        })
+}
+
 async function getSchedule()  {
     const url = 'http://localhost:8000/schedule';
     try {
