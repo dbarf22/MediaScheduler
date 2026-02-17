@@ -273,6 +273,10 @@ ul {
   cursor: not-allowed;
 }
 
+.removeButton {
+
+}
+
 
 .blur {
   z-index: 2;
