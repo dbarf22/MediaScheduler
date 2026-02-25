@@ -568,7 +568,7 @@
     <routine id="213" parent="1" name="padr"/>
     <schema id="214" parent="1" name="main">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2026-02-17.17:41:54</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2026-02-25.23:05:21</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="215" parent="14">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1829,68 +1829,67 @@
       <Position>3</Position>
       <StoredType>BLOB|0s</StoredType>
     </column>
-    <column id="635" parent="627" name="room_id">
-      <DefaultExpression>0</DefaultExpression>
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-      <StoredType>integer|0s</StoredType>
-    </column>
-    <foreign-key id="636" parent="627" name="room_fk">
-      <ColNames>room_id</ColNames>
-      <RefColNames>room_id</RefColNames>
-      <RefTableName>room_list</RefTableName>
-    </foreign-key>
-    <index id="637" parent="627" name="sqlite_autoindex_apscheduler_jobs_1">
+    <index id="635" parent="627" name="sqlite_autoindex_apscheduler_jobs_1">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <index id="638" parent="627" name="ix_apscheduler_jobs_next_run_time">
+    <index id="636" parent="627" name="ix_apscheduler_jobs_next_run_time">
       <ColNames>next_run_time</ColNames>
     </index>
-    <key id="639" parent="627">
+    <key id="637" parent="627">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>sqlite_autoindex_apscheduler_jobs_1</UnderlyingIndexName>
     </key>
-    <column id="640" parent="628" name="name">
+    <column id="638" parent="628" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StoredType>text|0s</StoredType>
+      <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="641" parent="628" name="description">
+    <column id="639" parent="628" name="room_id">
+      <NotNull>1</NotNull>
       <Position>2</Position>
-      <StoredType>text|0s</StoredType>
+      <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="642" parent="628" name="likes">
+    <column id="640" parent="628" name="user_id">
+      <NotNull>1</NotNull>
       <Position>3</Position>
-      <StoredType>text|0s</StoredType>
+      <StoredType>VARCHAR|0s</StoredType>
     </column>
-    <column id="643" parent="628" name="user_id">
+    <column id="641" parent="628" name="name">
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StoredType>text|0s</StoredType>
+      <StoredType>VARCHAR|0s</StoredType>
     </column>
-    <column id="644" parent="628" name="room_id">
+    <column id="642" parent="628" name="description">
       <Position>5</Position>
-      <StoredType>integer|0s</StoredType>
+      <StoredType>VARCHAR(150)|0s</StoredType>
     </column>
-    <foreign-key id="645" parent="628" name="room_fk">
+    <column id="643" parent="628" name="likes">
+      <Position>6</Position>
+      <StoredType>VARCHAR|0s</StoredType>
+    </column>
+    <foreign-key id="644" parent="628">
       <ColNames>room_id</ColNames>
       <RefColNames>room_id</RefColNames>
       <RefTableName>room_list</RefTableName>
     </foreign-key>
+    <key id="645" parent="628">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
     <column id="646" parent="629" name="room_id">
-      <AutoIncrement>1</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StoredType>integer|0s</StoredType>
+      <StoredType>INTEGER|0s</StoredType>
     </column>
     <column id="647" parent="629" name="device_id">
+      <NotNull>1</NotNull>
       <Position>2</Position>
-      <StoredType>TEXT|0s</StoredType>
+      <StoredType>VARCHAR|0s</StoredType>
     </column>
-    <key id="648" parent="629" name="room_list_pk">
+    <key id="648" parent="629">
       <ColNames>room_id</ColNames>
       <Primary>1</Primary>
     </key>

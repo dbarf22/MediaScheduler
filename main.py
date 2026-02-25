@@ -1,20 +1,21 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from zoneinfo import ZoneInfo
 import jellyfin_communicator
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-from apscheduler.triggers.date import DateTrigger
 from datetime import datetime
 from contextlib import asynccontextmanager
+from sqlalchemy import create_engine
+from room_manager import Patient, Room
 
-# Stuff to initialize the sqlite db that holds jobs
+# initializing APScheduler's SQLAlchemy engine
 jobstores = {
     'default': SQLAlchemyJobStore(url='sqlite:///jobs.sqlite')
 }
-
 scheduler = BackgroundScheduler(jobstores=jobstores)
+
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -39,6 +40,7 @@ class ScheduleRequest(BaseModel):
     contentId: str
     sessionId: str
     contentName: str
+    patientId: int
 
 class DeleteScheduleRequest(BaseModel):
     jobId: str
@@ -63,9 +65,10 @@ async def get_library_series():
 async def get_series_episodes(seriesId: str):
     return jellyfin_communicator.getLibrarySeriesEpisodes(seriesId)
 
+# Schedule a TV show with a supplied episode id
 @app.post("/schedule/show")
 async def scheduleContent(body: ScheduleRequest):
-    if body.contentId == '' or body.sessionId == '' or body.date == '':
+    if body.patientId == '' or body.contentId == '' or body.sessionId == '' or body.date == '':
         return {"Error" : "Please provide all required fields"}
     convertedDate = datetime.fromisoformat(body.date)
 
@@ -76,6 +79,8 @@ async def scheduleContent(body: ScheduleRequest):
     scheduler.add_job(play, 'date', run_date=convertedDate, args=[body.contentId, body.sessionId, title])
     return {"Success" : "Item added to schedule successfully"}
 
+
+# Schedule a movie (This method needs to be renamed)
 @app.post("/schedule")
 async def scheduleContentShow(body: ScheduleRequest):
     if body.contentId == '' or body.sessionId == '' or body.date == '':
@@ -84,6 +89,8 @@ async def scheduleContentShow(body: ScheduleRequest):
     scheduler.add_job(play, 'date', run_date=convertedDate, args=[body.contentId, body.sessionId, body.contentName])
     return {"Success" : "Item added to schedule successfully"}
 
+
+# Returns the schedule list
 @app.get("/schedule")
 async def getSchedule():
     jobList = []
