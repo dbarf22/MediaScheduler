@@ -1,14 +1,12 @@
 from typing import Optional, List
-from sqlalchemy import String, ForeignKey, create_engine
-from sqlalchemy.orm import DeclarativeBase, relationship, Mapped, mapped_column, Session
+from sqlalchemy import String, ForeignKey, create_engine, Select
+from sqlalchemy.orm import DeclarativeBase, relationship, Mapped, mapped_column, Session, joinedload
 
 # Initializing sqlalchemy engine to handle rooms/patients
 engine = create_engine("sqlite+pysqlite:///jobs.sqlite")
 
-
 class Base(DeclarativeBase):
     pass
-
 
 class Patient(Base):
     __tablename__ = "patients"
@@ -40,16 +38,17 @@ def generate_tables():
 # Search table for patients by name to get their ids
 def search_patients(name):
     with Session(engine) as session:
-        session.query()
+        query = Select(Patient).options(joinedload(Patient.room)).where(Patient.name.contains(name))
+        return session.scalars(query).all()
 
+# Get list of patients associated with a room
+def get_patients_in_room(room_number):
+    with Session(engine) as session:
+        query = Select(Patient).where(Patient.room_id == room_number)
+        return session.scalars(query).all()
 
 def add_patient(name, description="N/A", likes="N/A", user_id="N/A", room_id=-1):
     with Session(engine) as session:
-
-        room_check = session.get(Room, room_id)
-        if not room_check:
-            print(f"Error: Room {room_id} is invalid.")
-
         new_patient = Patient(
             room_id=room_id,
             user_id=user_id,
