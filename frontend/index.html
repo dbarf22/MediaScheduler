@@ -1,4 +1,5 @@
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" xmlns:x-on="http://www.w3.org/1999/xhtml" xmlns:x-bind="http://www.w3.org/1999/xhtml">
   <head>
     <script
       defer
@@ -36,7 +37,7 @@
   >
     <!-- NAV BAR --------------------------- -->
     <header class="navbar">
-      <div class="inputRow">
+      <div class="navbarRow">
         <label for="sessions">Select a session to control: </label>
         <select
           class="topInput"
@@ -100,7 +101,7 @@
           <ul class="container" x-show="showMovies">
             <template x-for="movie in movies" :key="movie.Id">
               <div
-                :class="selectedContentId===movie.Id ? 'selectedMovieCard' : 'movieCard'"
+                :class="'movieCard'"
                 x-on:click="selectedContentId=movie.Id; selectedContentName=movie.Name;
 					selectedContentPoster=movie.posterLink; contentIsSelected = true"
               >
@@ -110,7 +111,14 @@
                   :title="movie.Name"
                   class="poster"
                 />
-                <p x-text="movie.Name" class="cardTitles"></p>
+                <div class="movieCardText">
+                  <div class="movieCardTitleLine">
+                    <p x-text="movie.Name" class="cardTitles"></p>
+                  </div>
+                  <div class="movieCardDateLine">
+                    <p x-text="movie.ProductionYear"></p>
+                  </div>
+                </div>
               </div>
             </template>
           </ul>
@@ -132,7 +140,14 @@
                   :title="show.Name"
                   class="poster"
                 />
-                <p x-text="show.Name" class="cardTitles"></p>
+                <div class="movieCardText">
+                  <div class="movieCardTitleLine">
+                    <p x-text="show.Name" class="cardTitles"></p>
+                  </div>
+                  <div class="movieCardDateLine">
+                    <p x-text="show.ProductionYear"></p>
+                  </div>
+                </div>
               </div>
             </template>
           </ul>
@@ -144,13 +159,13 @@
 
     <div x-show="contentIsSelected" class="modal">
       <div
-        class="blur"
+        class="selectScreenBackground"
         x-on:click="selectedContentId=''; selectedContentName='';
                 selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false"
       ></div>
 
       <!-- MOVIE OPTION ------------------ -->
-      <div x-show="!contentIsSeries" class="contentSelectedCard">
+      <div x-show="!contentIsSeries" class="selectedContentCard">
         <div class="selectedContentInfoPane">
           <img
             :src="selectedContentPoster"
@@ -169,7 +184,7 @@
               placeholder="M/D/YYYY HH:MM"
               name="dates"
               id="dates"
-              type="date"
+              type="text"
               x-model="selectedDateTime"
                x-init="flatpickr('#dates', {
         altInput: true,
@@ -193,7 +208,7 @@
             Submit
           </button>
 
-          <button
+          <button class="backButton"
             x-on:click="selectedContentId=''; selectedContentName='';
                 selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false;"
           >
@@ -205,7 +220,7 @@
 
       <!-- SERIES OPTION ----------------- -->
 
-      <div x-show="contentIsSeries" class="contentSelectedCard">
+      <div x-show="contentIsSeries" class="selectedContentCard">
         <div class="selectedContentInfoPane">
           <img
             :src="selectedContentPoster"

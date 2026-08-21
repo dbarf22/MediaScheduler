@@ -23,7 +23,7 @@ def getLibraryMovies():
 
     response = response.json()['Items']
 
-    filter = {"Name", "Id","Type"}
+    filter = {"Name", "Id","Type","ProductionYear"}
 
     # for every movie in the response, key is equal to value for every pair movie.items() if that key is in the filter
     # reminder that ** will actually unpack the dictionary that the k: v for k.. line makes
@@ -49,7 +49,7 @@ def getLibrarySeries():
 
     response = response.json()['Items']
 
-    filter = {"Name", "Id","Type"}
+    filter = {"Name", "Id","Type","ProductionYear"}
 
     # for every movie in the response, key is equal to value for every pair movie.items() if that key is in the filter
     # reminder that ** will actually unpack the dictionary that the k: v for k.. line makes

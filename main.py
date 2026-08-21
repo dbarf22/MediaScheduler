@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from zoneinfo import ZoneInfo
+
+from starlette.responses import HTMLResponse
+from starlette.templating import Jinja2Templates
+
 import jellyfin_communicator
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -45,6 +49,10 @@ class DeleteScheduleRequest(BaseModel):
 
 class SeriesEpisodeRequest(BaseModel):
     seriesId: str
+
+# Frontend
+
+app.frontend("/", directory="frontend")
 
 # API Calls
 @app.get("/sessions")
