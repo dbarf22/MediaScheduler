@@ -35,6 +35,13 @@
     x-init="sessions = await getSessions(); movies = await getLibrary();
     scheduleList = await getSchedule(); shows = await getLibraryShows(); console.log(sessions)"
   >
+
+    <template x-if="selectedSessionId === ''">
+      <div
+        class="selectScreenBackground"
+      ></div>
+    </template>
+
     <!-- NAV BAR --------------------------- -->
     <header class="navbar">
       <div class="navbarRow">
@@ -45,7 +52,7 @@
           id="sessions"
           x-model="selectedSessionId"
         >
-          <option>Select a session</option>
+          <option value="">Select a session</option>
           <template x-for="session in sessions" :key="session.Id">
             <template x-if="session.SupportsRemoteControl">
               <option
@@ -58,7 +65,8 @@
       </div>
     </header>
 
-    <!-- Load movies ids and posters --------------------- -->
+    <template x-if="selectedSessionId !== ''">
+      <!-- Load movies ids and posters --------------------- -->
     <div>
       <div>
         <div class="scheduleList">
@@ -102,8 +110,9 @@
             <template x-for="movie in movies" :key="movie.Id">
               <div
                 :class="'movieCard'"
-                x-on:click="selectedContentId=movie.Id; selectedContentName=movie.Name;
-					selectedContentPoster=movie.posterLink; contentIsSelected = true"
+                x-on:click="contentIsSelected = true; contentIsSeries=false"
+                x-on:mouseover="selectedContentId=movie.Id; selectedContentName=movie.Name;
+					selectedContentPoster=movie.posterLink"
               >
                 <img
                   :src="movie.posterLink"
@@ -128,11 +137,11 @@
           <ul class="container" x-show="!showMovies">
             <template x-for="show in shows" :key="show.Id">
               <div
-                :class="selectedContentId===show.Id ? 'selectedMovieCard' : 'movieCard'"
-                x-on:click="selectedContentId=show.Id; selectedContentName=show.Name;
-					selectedContentPoster=show.posterLink; contentIsSelected = true;
-					selectedSeriesEpisodes = await getSeriesEpisodes(selectedContentId),
-					contentIsSeries=true;"
+                :class="'movieCard'"
+                x-on:click="contentIsSelected = true; contentIsSeries=true"
+                x-on:mouseover="selectedContentId=show.Id; selectedContentName=show.Name;
+					selectedContentPoster=show.posterLink;
+					selectedSeriesEpisodes = await getSeriesEpisodes(selectedContentId)"
               >
                 <img
                   :src="show.posterLink"
@@ -154,6 +163,7 @@
         </div>
       </div>
     </div>
+    </template>
 
     <!-- MENU FOR SHOWING SELECTED CONTENT. Split btwn movie and series option -->
 
@@ -166,19 +176,27 @@
 
       <!-- MOVIE OPTION ------------------ -->
       <div x-show="!contentIsSeries" class="selectedContentCard">
-        <div class="selectedContentInfoPane">
-          <img
-            :src="selectedContentPoster"
-            :alt="selectedContentName"
-            :title="selectedContentName"
-            class="selectedContentPoster"
-          />
-          <h1 x-text="selectedContentName" class="selectedContentName"></h1>
+
+        <!-- top menu bar -->
+        <div class="selectedContentTop">
+          <p>Schedule Movie</p>
         </div>
 
-        <div class="selectedContentControlPane">
-          <div class="inputRow">
-            <label for="dates">Select a date and time:</label>
+        <!-- middle content section -->
+        <div class="selectedContentMiddle">
+          <div class="selectedContentInfoPane">
+            <img
+              :src="selectedContentPoster"
+              :alt="selectedContentName"
+              :title="selectedContentName"
+              class="selectedContentPoster"
+            />
+            <p x-text="selectedContentName" class="selectedContentName"></p>
+          </div>
+
+        <div class="selectedContentDatePane">
+
+          <label for="dates">Select a date and time:</label>
             <input
               class="dateInput"
               placeholder="M/D/YYYY HH:MM"
@@ -195,9 +213,20 @@
         onChange: function(selectedDates, dateStr, instance) {selectedDateTime = dateStr; console.log(dateStr)}
       });"
             />
-          </div>
+        </div>
+        </div>
 
-          <div class="buttonRow">
+        <!-- Bottom button row -->
+          <div class="selectedContentBottom">
+
+
+          <button class="backButton"
+            x-on:click="selectedContentId=''; selectedContentName='';
+                selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false;"
+          >
+            Go Back
+          </button>
+
             <button
             class="submitButton"
             x-on:click="schedule(selectedDateTime, selectedSessionId, selectedContentId, selectedContentName);
@@ -207,31 +236,29 @@
           >
             Submit
           </button>
-
-          <button class="backButton"
-            x-on:click="selectedContentId=''; selectedContentName='';
-                selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false;"
-          >
-            Go Back
-          </button>
           </div>
-        </div>
+
       </div>
 
       <!-- SERIES OPTION ----------------- -->
 
       <div x-show="contentIsSeries" class="selectedContentCard">
-        <div class="selectedContentInfoPane">
+        <div class="selectedContentTop">
+          <p>Schedule Episode</p>
+        </div>
+
+        <div class="selectedContentMiddle">
+          <div class="selectedContentInfoPane">
           <img
             :src="selectedContentPoster"
             :alt="selectedContentName"
             :title="selectedContentName"
             class="selectedContentPoster"
           />
-          <h1 x-text="selectedContentName" class="selectedContentName"></h1>
+          <p x-text="selectedContentName" class="selectedContentName"></p>
         </div>
 
-        <div class="selectedContentControlPane">
+        <div class="selectedContentDatePane">
           <div class="selectEpisode">
             <label for="seasons">Select an episode: </label>
           <select
@@ -270,8 +297,9 @@
       });"
               />
             </div>
-
-            <div class="buttonRow">
+        </div>
+      </div>
+        <div class="selectedContentBottom">
               <button
                 x-on:click="selectedContentId=''; selectedContentName='';
                   selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false;"
@@ -292,8 +320,6 @@
 
 
             </div>
-        </div>
-      </div>
     </div>
 
     <!-- Flatpickr script -->

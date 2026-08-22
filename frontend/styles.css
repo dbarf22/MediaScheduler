@@ -13,7 +13,7 @@ body {
   display: flex;
   flex-direction: row;
   position: fixed;
-  height: 64px;
+  height: 5vh;
   width: 100%;
   z-index: 4;
   justify-content: center;
@@ -29,11 +29,6 @@ body {
 
 }
 
-.inputRow {
-  padding: 10px;
-  color: #d2d2d2;
-}
-
 .topInput {
   background-color: #202020;
   color: #d2d2d2;
@@ -44,15 +39,6 @@ body {
   font-family: inherit;
 }
 
-.dateInput {
-  background-color: #202020;
-  color: #d2d2d2;
-  border-style: solid;
-  border-radius: 10px;
-  border-width: 1px;
-  text-align: center;
-  font-family: inherit;
-}
 
 
 .scheduleList {
@@ -112,17 +98,7 @@ body {
   justify-content: center;
   gap: 20px;
 }
-  .selectedContentCard {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  background-color: #202020;
-  z-index: 3;
-  height: 250vh;
-  padding-inline: 1.5em;
-  padding-block: 1em;
-  font-size: 2cqh;
-}
+
 }
 
 @media (min-width: 1920px) {
@@ -191,7 +167,6 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 3;
-
 }
 
 .selectedContentCard {
@@ -199,56 +174,87 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #202020;
   z-index: 3;
-  height: 60vh;
-  max-width: 80vw;
-  padding-inline: 1.5em;
-  padding-block: 1em;
-  font-size: 2cqh;
+  width: 30vw;
 }
 
 @media (min-width: 1000px) {
   .selectedContentCard {
+   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 3;
+}
+}
+
+.selectedContentTop {
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  background-color: #202020;
-  z-index: 3;
-  height: 25vh;
-  padding-inline: 1.5em;
-  padding-block: 1em;
-    gap: 1.5em;
-  font-size: 2cqh;
+  justify-content: flex-start;
+  width: 100%;
+  background-color: #292929;
+  padding: .7em;
 }
+
+.selectedContentTop p {
+  margin: 0;
+  font-weight: normal;
+}
+
+.selectedContentMiddle {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-around;
+  background-color: #171717;
+  padding: .7em;
+  gap: 1em;
+  align-items: center;
 }
 
 .selectedContentInfoPane {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
+  align-items: center;
+  width: 50%
 }
 
 .selectedContentPoster {
-  object-fit:contain;
-  overflow: hidden;
+  height: 300px;
 }
 
 .selectedContentName {
   margin: 0;
   padding-top: .6em;
-  font-size: .8em;
+  font-weight: normal;
   text-align: center;
 }
 
-.selectedContentControlPane {
+.selectedContentDatePane {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-content: flex-start;
-  max-width: 50%;
-  min-height: 90%;
+  width: 100%;
+}
+
+.selectedContentDatePane label {
+  text-wrap: nowrap;
+  padding-right: 10px;
+}
+
+.dateInput {
+  background-color: #292929;
+  color: #d2d2d2;
+  border: .16em solid #292929;
+  border-radius: .2em;
+  padding: .4em .25em;
+  font-size: 110%;
+  text-align: center;
+  font-family: inherit;
+}
+
+.dateInput:focus {
+  border-color: #00a4dc;
 }
 
 .selectEpisode {
@@ -274,53 +280,34 @@ body {
 .selectEpisode label {
   text-wrap: nowrap;
   padding-right: 10px;
-  font-size: 16px
 }
 
-.inputRow {
-  display:flex;
-  flex-direction: row;
-  padding-left: 0;
-  flex-wrap: wrap
-}
 
-.inputRow label {
-  flex-grow: 3;
-  text-wrap: nowrap;
-  padding-right: 10px;
-  font-size: 16px
-}
 
-.inputRow input {
-  flex-grow: 3;
-  text-wrap: nowrap;
-  padding-right: 10px;
-  min-width: 0;
-}
-
-.buttonRow {
+.selectedContentBottom {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-evenly;
+  background-color: #292929;
   gap: 20px;
-  padding: 0 10px 0 10px;
+  width: 100%;
+  padding: .7em;
 }
 
-.buttonRow button {
+.selectedContentBottom button {
   color: #d2d2d2;
   cursor: pointer;
-  font: inherit;
-  font-size: 1.2cqh;
   font-weight: 600;
+  font-size: medium;
+  font-family: inherit;
   border-radius: .2em;
+  padding: .5em
 }
 
-.buttonRow button:hover {
-  background-color: #00a4dc33;
-}
+
 
 .backButton {
-  background-color: transparent;
+  background-color: #424242;
   border-color: transparent;
 }
 
@@ -331,6 +318,7 @@ body {
 
 .submitButton:disabled {
   cursor: not-allowed;
+  background-color: #424242;
 }
 
 .seasonSelector {

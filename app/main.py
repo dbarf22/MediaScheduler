@@ -1,15 +1,10 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from zoneinfo import ZoneInfo
-
-from starlette.responses import HTMLResponse
-from starlette.templating import Jinja2Templates
-
 import jellyfin_communicator
+
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-from apscheduler.triggers.date import DateTrigger
 from datetime import datetime
 from contextlib import asynccontextmanager
 
