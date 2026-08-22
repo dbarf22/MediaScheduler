@@ -175,14 +175,17 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 3;
-  width: 30vw;
+  width: 70vw;
+  font-size: 1em
 }
 
-@media (min-width: 1000px) {
+
+@media (min-width: 1500px) {
   .selectedContentCard {
    display: flex;
   flex-direction: column;
   justify-content: center;
+    width: 30vw;
   z-index: 3;
 }
 }
@@ -203,13 +206,19 @@ body {
 
 .selectedContentMiddle {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
   justify-content: space-around;
   background-color: #171717;
   padding: .7em;
   gap: 1em;
   align-items: center;
+}
+
+@media (min-width: 1500px) {
+  .selectedContentMiddle {
+  flex-direction: row;
+}
 }
 
 .selectedContentInfoPane {
@@ -221,6 +230,8 @@ body {
 
 .selectedContentPoster {
   height: 300px;
+  width: auto;
+  object-fit: contain;
 }
 
 .selectedContentName {
@@ -228,6 +239,7 @@ body {
   padding-top: .6em;
   font-weight: normal;
   text-align: center;
+  word-break: break-word;
 }
 
 .selectedContentDatePane {
@@ -265,14 +277,12 @@ body {
 }
 
 .selectEpisode select {
-  flex-grow: 1;
-  flex-shrink: 1;
-  min-width: 0;
-  background-color: #202020;
+  background-color: #292929;
   color: #d2d2d2;
-  border-style: solid;
-  border-radius: 10px;
-  border-width: 1px;
+  border: .16em solid #292929;
+  border-radius: .2em;
+  padding: .4em .25em;
+  font-size: 110%;
   text-align: center;
   font-family: inherit;
 }
