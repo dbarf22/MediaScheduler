@@ -1,62 +1,132 @@
+/* ==========================================================================
+   Theme
+   ========================================================================== */
+
+:root {
+  --bg: #101010;
+  --surface: #202020;
+  --surface-raised: #292929;
+  --surface-sunken: #171717;
+  --neutral-button: #424242;
+
+  --text: #d2d2d2;
+  --text-muted: #999;
+  --text-dim: #d2d2d233;
+
+  --accent: #00a4dc;
+  --accent-glow: #00a4dc50;
+
+  --navbar-height: 64px;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
 
 body {
   margin: 0;
-  padding:0;
-  background-color: #101010;
+  padding: 0;
+  background-color: var(--bg);
+  color: var(--text);
   font-family: "Noto Sans", sans-serif;
-  align-content: center;
-  color: #d2d2d2;
 }
 
-.navbar {
-  display: flex;
-  flex-direction: row;
-  position: sticky;
-  top: 0;
-  height: 64px;
-  width: 100%;
-  z-index: 4;
-  justify-content: center;
-  align-items: center;
-  background: #202020ff;
+ul {
+  list-style-type: none;
+  padding-inline: 4vw;
 }
 
-.navbarRow {
-  color: #d2d2d2;
-}
-
-
-.topInput {
-  background-color: #202020;
-  color: #d2d2d2;
-  border-style: solid;
-  border-radius: 10px;
-  border-width: 1px;
+/* Shared look for the dark text inputs / selects */
+.topInput,
+.dateInput,
+.selectEpisode select {
+  background-color: var(--surface);
+  color: var(--text);
   text-align: center;
   font-family: inherit;
 }
+
+.dateInput,
+.selectEpisode select {
+  background-color: var(--surface-raised);
+  border: 0.16em solid var(--surface-raised);
+  border-radius: 0.2em;
+  padding: 0.4em 0.25em;
+  font-size: 110%;
+}
+
+.dateInput:focus {
+  border-color: var(--accent);
+}
+
+/* Shared label style inside the schedule forms */
+.selectedContentDatePane label,
+.selectEpisode label {
+  text-wrap: nowrap;
+  padding-right: 10px;
+}
+
+/* ==========================================================================
+   Navbar
+   ========================================================================== */
+
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  width: 100%;
+  height: var(--navbar-height);
+  background: var(--surface);
+}
+
+.topInput {
+  border: 1px solid;
+  border-radius: 10px;
+}
+
+/* ==========================================================================
+   Empty state (no device selected)
+   ========================================================================== */
+
+.noDeviceSelectedScreen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - var(--navbar-height));
+}
+
+/* ==========================================================================
+   Scheduled items
+   ========================================================================== */
 
 .scheduleList {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   justify-content: center;
-  padding: 40px;
-  padding-inline:80px;
   gap: 20px;
+  padding: 40px 80px;
 }
 
 .scheduleItem {
   display: flex;
   flex-direction: column;
-  background-color: #202020;
   padding: 20px;
-  text-align: center;
+  background-color: var(--surface);
   border-radius: 10px;
+  text-align: center;
 }
 
-.scheduleItem:hover {
-  outline: #00a4dc50 solid 4px;
+.scheduleItem:hover,
+.movieCard:hover {
+  outline: var(--accent-glow) solid 4px;
 }
+
+/* ==========================================================================
+   Movies / Series selector + search
+   ========================================================================== */
 
 .mediaTypeSelector {
   display: flex;
@@ -66,25 +136,27 @@ body {
   padding-inline: 4vw;
 }
 
-.mediaTypeButton{
-  color: #d2d2d233;
+.mediaTypeButton {
+  padding: 0;
   background: transparent;
-  border-radius: 30px;
-  border-color: transparent;
-  cursor: pointer;
+  border: none;
+  color: var(--text-dim);
   font-family: inherit;
   font-size: 2em;
-  padding: 0;
-  border: none;
+  cursor: pointer;
 }
 
-.mediaTypeButton.selected{
-  color: #d2d2d2;
+.mediaTypeButton.selected {
+  color: var(--text);
 }
 
 .mediaSearchBar {
   height: 100%;
 }
+
+/* ==========================================================================
+   Poster grid + cards
+   ========================================================================== */
 
 .container {
   display: grid;
@@ -95,35 +167,33 @@ body {
 
 @media (min-width: 1000px) {
   .container {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  justify-content: center;
-  gap: 20px;
-}
-
+    grid-template-columns: repeat(6, 1fr);
+  }
 }
 
 @media (min-width: 1920px) {
   .container {
-  display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  justify-content: center;
-  gap: 20px;
-}
+    grid-template-columns: repeat(9, 1fr);
+  }
 }
 
 .movieCard {
   display: flex;
   flex-direction: column;
-  cursor: pointer;
   height: 100%;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .movieCard:hover {
-  outline: #00a4dc50 solid 4px;
   transform: scale(1.02);
-  transition: transform .2s;
+  transition: transform 0.2s;
+}
+
+.poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: fill;
 }
 
 .movieCardText {
@@ -133,42 +203,44 @@ body {
 }
 
 .movieCardTitleLine {
-  padding-top: .6em;
-  max-width: 100% ;
+  max-width: 100%;
+  padding-top: 0.6em;
 }
 
-.movieCardTitleLine p {
-    text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  text-align: center;
+.movieCardTitleLine p,
+.movieCardDateLine p {
   margin: 0;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .movieCardDateLine p {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  text-align: center;
-  margin: 0;
-  color: #999;
-  font-size: .8em;
+  color: var(--text-muted);
+  font-size: 0.8em;
 }
 
-.poster {
-  aspect-ratio: 2/3;
-  object-fit: fill;
-  width: 100%;
-}
+/* ==========================================================================
+   Schedule modal
+   ========================================================================== */
 
 .modal {
   position: fixed;
-  container-type: inline-size;
   inset: 0;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 3;
+  container-type: inline-size;
+}
+
+/* Dimmed, clickable backdrop behind the modal card */
+.selectScreenBackground {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  backdrop-filter: brightness(50%);
 }
 
 .selectedContentCard {
@@ -178,21 +250,20 @@ body {
   justify-content: center;
   z-index: 3;
   width: 70vw;
-  font-size: 1em
 }
-
 
 @media (min-width: 1500px) {
   .selectedContentCard {
-   display: flex;
-  flex-direction: column;
-  justify-content: center;
     width: 30vw;
-  z-index: 3;
-}
+  }
 }
 
-.selectedContentTop, .selectedContentMiddle, .selectedContentBottom {
+/* Top bar / middle / bottom bar */
+
+.selectedContentTop,
+.selectedContentMiddle,
+.selectedContentBottom {
+  width: 100%;
   padding-inline: 2em;
 }
 
@@ -200,9 +271,8 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  width: 100%;
-  background-color: #292929;
-  padding-block: .7em;
+  padding-block: 0.7em;
+  background-color: var(--surface-raised);
 }
 
 .selectedContentTop p {
@@ -213,40 +283,52 @@ body {
 .selectedContentMiddle {
   display: flex;
   flex-direction: column;
-  width: 100%;
   justify-content: space-around;
-  background-color: #171717;
-  gap: 1em;
   align-items: center;
+  gap: 1em;
   padding-block: 1em;
+  background-color: var(--surface-sunken);
 }
 
 @media (min-width: 1500px) {
   .selectedContentMiddle {
+    flex-direction: row;
+  }
+}
+
+.selectedContentBottom {
+  display: flex;
   flex-direction: row;
+  justify-content: space-evenly;
+  gap: 20px;
+  padding-block: 0.7em;
+  background-color: var(--surface-raised);
 }
-}
+
+/* Poster + title pane */
 
 .selectedContentInfoPane {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 50%
+  width: 50%;
 }
 
 .selectedContentPoster {
-  height: 300px;
   width: auto;
+  height: 300px;
   object-fit: contain;
 }
 
 .selectedContentName {
   margin: 0;
-  padding-top: .6em;
+  padding-top: 0.6em;
   font-weight: normal;
   text-align: center;
   word-break: break-word;
 }
+
+/* Date / episode pane */
 
 .selectedContentDatePane {
   display: flex;
@@ -255,99 +337,37 @@ body {
   width: 100%;
 }
 
-.selectedContentDatePane label {
-  text-wrap: nowrap;
-  padding-right: 10px;
-}
-
-.dateInput {
-  background-color: #292929;
-  color: #d2d2d2;
-  border: .16em solid #292929;
-  border-radius: .2em;
-  padding: .4em .25em;
-  font-size: 110%;
-  text-align: center;
-  font-family: inherit;
-}
-
-.dateInput:focus {
-  border-color: #00a4dc;
-}
-
 .selectEpisode {
-  display:flex;
-  flex-direction: row;
-  flex-shrink: 1;
-  padding-right:10px
-}
-
-.selectEpisode select {
-  background-color: #292929;
-  color: #d2d2d2;
-  border: .16em solid #292929;
-  border-radius: .2em;
-  padding: .4em .25em;
-  font-size: 110%;
-  text-align: center;
-  font-family: inherit;
-}
-
-.selectEpisode label {
-  text-wrap: nowrap;
-  padding-right: 10px;
-}
-
-.selectedContentBottom {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
-  background-color: #292929;
-  gap: 20px;
-  width: 100%;
-  padding-block: .7em;
+  padding-right: 10px;
 }
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
 
 .selectedContentBottom button {
-  color: #d2d2d2;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: medium;
+  padding: 0.5em;
+  border-radius: 0.2em;
+  color: var(--text);
   font-family: inherit;
-  border-radius: .2em;
-  padding: .5em
+  font-size: medium;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-
-
 .backButton {
-  background-color: #424242;
+  background-color: var(--neutral-button);
   border-color: transparent;
 }
 
 .submitButton {
-  background-color: #00a4dc;
+  background-color: var(--accent);
   border-color: transparent;
 }
 
 .submitButton:disabled {
+  background-color: var(--neutral-button);
   cursor: not-allowed;
-  background-color: #424242;
-}
-
-.seasonSelector {
-  flex-shrink:1 ;
-}
-
-ul {
-  list-style-type: none;
-  padding-inline: 4vw;
-}
-
-
-.noDeviceSelectedScreen {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 64px)
 }
