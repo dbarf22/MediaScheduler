@@ -17,6 +17,9 @@
   --accent-glow: #00a4dc50;
 
   --navbar-height: 64px;
+  --page-gutter: 4vw;
+  --gap: 20px;
+  --radius: 10px;
 }
 
 /* ==========================================================================
@@ -31,23 +34,18 @@ body {
   font-family: "Noto Sans", sans-serif;
 }
 
-ul {
-  list-style-type: none;
-  padding-inline: 4vw;
-}
-
 /* Shared look for the dark text inputs / selects */
-.topInput,
-.dateInput,
-.selectEpisode select {
+.top-input,
+.date-input,
+.select-episode select {
   background-color: var(--surface);
   color: var(--text);
   text-align: center;
   font-family: inherit;
 }
 
-.dateInput,
-.selectEpisode select {
+.date-input,
+.select-episode select {
   background-color: var(--surface-raised);
   border: 0.16em solid var(--surface-raised);
   border-radius: 0.2em;
@@ -55,13 +53,13 @@ ul {
   font-size: 110%;
 }
 
-.dateInput:focus {
+.date-input:focus {
   border-color: var(--accent);
 }
 
 /* Shared label style inside the schedule forms */
-.selectedContentDatePane label,
-.selectEpisode label {
+.selected-content-date-pane label,
+.select-episode label {
   text-wrap: nowrap;
   padding-right: 10px;
 }
@@ -82,16 +80,16 @@ ul {
   background: var(--surface);
 }
 
-.topInput {
+.top-input {
   border: 1px solid;
-  border-radius: 10px;
+  border-radius: var(--radius);
 }
 
 /* ==========================================================================
    Empty state (no device selected)
    ========================================================================== */
 
-.noDeviceSelectedScreen {
+.no-device-screen {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -102,25 +100,25 @@ ul {
    Scheduled items
    ========================================================================== */
 
-.scheduleList {
+.schedule-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   justify-content: center;
-  gap: 20px;
+  gap: var(--gap);
   padding: 40px 80px;
 }
 
-.scheduleItem {
+.schedule-item {
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: var(--gap);
   background-color: var(--surface);
-  border-radius: 10px;
+  border-radius: var(--radius);
   text-align: center;
 }
 
-.scheduleItem:hover,
-.movieCard:hover {
+.schedule-item:hover,
+.media-card:hover {
   outline: var(--accent-glow) solid 4px;
 }
 
@@ -128,15 +126,15 @@ ul {
    Movies / Series selector + search
    ========================================================================== */
 
-.mediaTypeSelector {
+.media-type-selector {
   display: flex;
   justify-content: left;
   align-items: center;
   gap: 40px;
-  padding-inline: 4vw;
+  padding-inline: var(--page-gutter);
 }
 
-.mediaTypeButton {
+.media-type-button {
   padding: 0;
   background: transparent;
   border: none;
@@ -146,11 +144,11 @@ ul {
   cursor: pointer;
 }
 
-.mediaTypeButton.selected {
+.media-type-button.selected {
   color: var(--text);
 }
 
-.mediaSearchBar {
+.media-search-bar {
   height: 100%;
 }
 
@@ -158,26 +156,28 @@ ul {
    Poster grid + cards
    ========================================================================== */
 
-.container {
+.poster-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   justify-content: center;
-  gap: 20px;
+  gap: var(--gap);
+  list-style-type: none;
+  padding-inline: var(--page-gutter);
 }
 
 @media (min-width: 1000px) {
-  .container {
+  .poster-grid {
     grid-template-columns: repeat(6, 1fr);
   }
 }
 
 @media (min-width: 1920px) {
-  .container {
+  .poster-grid {
     grid-template-columns: repeat(9, 1fr);
   }
 }
 
-.movieCard {
+.media-card {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -185,7 +185,7 @@ ul {
   cursor: pointer;
 }
 
-.movieCard:hover {
+.media-card:hover {
   transform: scale(1.02);
   transition: transform 0.2s;
 }
@@ -196,19 +196,19 @@ ul {
   object-fit: fill;
 }
 
-.movieCardText {
+.media-card-text {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.movieCardTitleLine {
+.media-card-title-line {
   max-width: 100%;
   padding-top: 0.6em;
 }
 
-.movieCardTitleLine p,
-.movieCardDateLine p {
+.media-card-title-line p,
+.media-card-date-line p {
   margin: 0;
   overflow: hidden;
   text-align: center;
@@ -216,7 +216,7 @@ ul {
   white-space: nowrap;
 }
 
-.movieCardDateLine p {
+.media-card-date-line p {
   color: var(--text-muted);
   font-size: 0.8em;
 }
@@ -236,14 +236,14 @@ ul {
 }
 
 /* Dimmed, clickable backdrop behind the modal card */
-.selectScreenBackground {
+.modal-backdrop {
   position: absolute;
   inset: 0;
   z-index: 2;
   backdrop-filter: brightness(50%);
 }
 
-.selectedContentCard {
+.selected-content-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -253,21 +253,21 @@ ul {
 }
 
 @media (min-width: 1500px) {
-  .selectedContentCard {
+  .selected-content-card {
     width: 30vw;
   }
 }
 
 /* Top bar / middle / bottom bar */
 
-.selectedContentTop,
-.selectedContentMiddle,
-.selectedContentBottom {
+.selected-content-top,
+.selected-content-middle,
+.selected-content-bottom {
   width: 100%;
   padding-inline: 2em;
 }
 
-.selectedContentTop {
+.selected-content-top {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -275,12 +275,12 @@ ul {
   background-color: var(--surface-raised);
 }
 
-.selectedContentTop p {
+.selected-content-top p {
   margin: 0;
   font-weight: normal;
 }
 
-.selectedContentMiddle {
+.selected-content-middle {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -291,36 +291,36 @@ ul {
 }
 
 @media (min-width: 1500px) {
-  .selectedContentMiddle {
+  .selected-content-middle {
     flex-direction: row;
   }
 }
 
-.selectedContentBottom {
+.selected-content-bottom {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-  gap: 20px;
+  gap: var(--gap);
   padding-block: 0.7em;
   background-color: var(--surface-raised);
 }
 
 /* Poster + title pane */
 
-.selectedContentInfoPane {
+.selected-content-info-pane {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 50%;
 }
 
-.selectedContentPoster {
+.selected-content-poster {
   width: auto;
   height: 300px;
   object-fit: contain;
 }
 
-.selectedContentName {
+.selected-content-name {
   margin: 0;
   padding-top: 0.6em;
   font-weight: normal;
@@ -330,14 +330,14 @@ ul {
 
 /* Date / episode pane */
 
-.selectedContentDatePane {
+.selected-content-date-pane {
   display: flex;
   flex-direction: column;
   justify-content: center;
   width: 100%;
 }
 
-.selectEpisode {
+.select-episode {
   display: flex;
   flex-direction: row;
   padding-right: 10px;
@@ -347,7 +347,7 @@ ul {
    Buttons
    ========================================================================== */
 
-.selectedContentBottom button {
+.selected-content-bottom button {
   padding: 0.5em;
   border-radius: 0.2em;
   color: var(--text);
@@ -357,17 +357,17 @@ ul {
   cursor: pointer;
 }
 
-.backButton {
+.back-button {
   background-color: var(--neutral-button);
   border-color: transparent;
 }
 
-.submitButton {
+.submit-button {
   background-color: var(--accent);
   border-color: transparent;
 }
 
-.submitButton:disabled {
+.submit-button:disabled {
   background-color: var(--neutral-button);
   cursor: not-allowed;
 }

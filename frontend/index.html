@@ -40,10 +40,10 @@
 
     <!-- NAV BAR --------------------------- -->
     <header class="navbar">
-      <div class="navbarRow">
+      <div class="navbar-row">
         <label for="sessions">Select a session to control: </label>
         <select
-          class="topInput"
+          class="top-input"
           name="sessions"
           id="sessions"
           x-model="selectedSessionId"
@@ -62,7 +62,7 @@
     </header>
 
     <template x-if="selectedSessionId === ''">
-      <div class="noDeviceSelectedScreen">
+      <div class="no-device-screen">
         <h1>Select a device to begin </h1>
       </div>
     </template>
@@ -71,13 +71,13 @@
       <!-- Load movies ids and posters --------------------- -->
     <div>
       <div>
-        <div class="scheduleList">
+        <div class="schedule-list">
           <template x-for="item in scheduleList">
-            <div class="scheduleItem">
-              <strong x-text="item.title" class="scheduleItemTitle"></strong>
+            <div class="schedule-item">
+              <strong x-text="item.title" class="schedule-item-title"></strong>
               <i
                 x-text="'scheduled to play at ' + item.date"
-                class="scheduleDescription"
+                class="schedule-description"
               ></i>
               <button
                 x-on:click="removeFromSchedule(item.jobId); scheduleList = await getSchedule() "
@@ -91,22 +91,22 @@
         <!-- CHOOSE SERIES AND MOVIES BAR -------------------->
 
         <div x-data="{showMovies : true}">
-          <div class="mediaTypeSelector">
+          <div class="media-type-selector">
             <button type="button"
-              :class="showMovies ? 'mediaTypeButton selected' : 'mediaTypeButton'"
+              :class="showMovies ? 'media-type-button selected' : 'media-type-button'"
               x-on:click="showMovies = true"
             >
               Movies
             </button>
 
             <button type="button"
-              :class="!showMovies ? 'mediaTypeButton selected' : 'mediaTypeButton'"
+              :class="!showMovies ? 'media-type-button selected' : 'media-type-button'"
               x-on:click="showMovies = false"
             >
               Series
             </button>
             <search >
-              <form class="mediaSearchBar">
+              <form class="media-search-bar">
                 <label> Search:</label>
                 <input type="search">
                 <button>Search</button>
@@ -116,10 +116,10 @@
 
           <!-- POPULATED MOVIE CARDS ----------- -->
 
-          <ul class="container" x-show="showMovies">
+          <ul class="poster-grid" x-show="showMovies">
             <template x-for="movie in movies" :key="movie.Id">
               <div
-                :class="'movieCard'"
+                :class="'media-card'"
                 x-on:click="contentIsSelected = true; contentIsSeries=false"
                 x-on:mouseover="selectedContentId=movie.Id; selectedContentName=movie.Name;
 					selectedContentPoster=movie.posterLink"
@@ -130,11 +130,11 @@
                   :title="movie.Name"
                   class="poster"
                 />
-                <div class="movieCardText">
-                  <div class="movieCardTitleLine">
-                    <p x-text="movie.Name" class="cardTitles"></p>
+                <div class="media-card-text">
+                  <div class="media-card-title-line">
+                    <p x-text="movie.Name" class="card-titles"></p>
                   </div>
-                  <div class="movieCardDateLine">
+                  <div class="media-card-date-line">
                     <p x-text="movie.ProductionYear"></p>
                   </div>
                 </div>
@@ -144,10 +144,10 @@
 
           <!-- POPULATED SERIES CARDS --------------- -->
 
-          <ul class="container" x-show="!showMovies">
+          <ul class="poster-grid" x-show="!showMovies">
             <template x-for="show in shows" :key="show.Id">
               <div
-                :class="'movieCard'"
+                :class="'media-card'"
                 x-on:click="contentIsSelected = true; contentIsSeries=true"
                 x-on:mouseover="selectedContentId=show.Id; selectedContentName=show.Name;
 					selectedContentPoster=show.posterLink;
@@ -159,11 +159,11 @@
                   :title="show.Name"
                   class="poster"
                 />
-                <div class="movieCardText">
-                  <div class="movieCardTitleLine">
-                    <p x-text="show.Name" class="cardTitles"></p>
+                <div class="media-card-text">
+                  <div class="media-card-title-line">
+                    <p x-text="show.Name" class="card-titles"></p>
                   </div>
-                  <div class="movieCardDateLine">
+                  <div class="media-card-date-line">
                     <p x-text="show.ProductionYear"></p>
                   </div>
                 </div>
@@ -179,36 +179,36 @@
 
     <div x-show="contentIsSelected" class="modal">
       <div
-        class="selectScreenBackground"
+        class="modal-backdrop"
         x-on:click="selectedContentId=''; selectedContentName='';
                 selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false"
       ></div>
 
       <!-- MOVIE OPTION ------------------ -->
-      <div x-show="!contentIsSeries" class="selectedContentCard">
+      <div x-show="!contentIsSeries" class="selected-content-card">
 
         <!-- top menu bar -->
-        <div class="selectedContentTop">
+        <div class="selected-content-top">
           <p>Schedule Movie</p>
         </div>
 
         <!-- middle content section -->
-        <div class="selectedContentMiddle">
-          <div class="selectedContentInfoPane">
+        <div class="selected-content-middle">
+          <div class="selected-content-info-pane">
             <img
               :src="selectedContentPoster"
               :alt="selectedContentName"
               :title="selectedContentName"
-              class="selectedContentPoster"
+              class="selected-content-poster"
             />
-            <p x-text="selectedContentName" class="selectedContentName"></p>
+            <p x-text="selectedContentName" class="selected-content-name"></p>
           </div>
 
-        <div class="selectedContentDatePane">
+        <div class="selected-content-date-pane">
 
           <label for="dates">Select a date and time:</label>
             <input
-              class="dateInput"
+              class="date-input"
               placeholder="M/D/YYYY HH:MM"
               name="dates"
               id="dates"
@@ -227,10 +227,10 @@
         </div>
 
         <!-- Bottom button row -->
-          <div class="selectedContentBottom">
+          <div class="selected-content-bottom">
 
 
-          <button class="backButton"
+          <button class="back-button"
             x-on:click="selectedContentId=''; selectedContentName='';
                 selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false;"
           >
@@ -238,7 +238,7 @@
           </button>
 
             <button
-            class="submitButton"
+            class="submit-button"
             x-on:click="schedule(selectedDateTime, selectedSessionId, selectedContentId, selectedContentName);
                     scheduleList = await getSchedule()"
             :disabled="!selectedDateTime || !selectedSessionId "
@@ -252,32 +252,32 @@
 
       <!-- SERIES OPTION ----------------- -->
 
-      <div x-show="contentIsSeries" class="selectedContentCard">
-        <div class="selectedContentTop">
+      <div x-show="contentIsSeries" class="selected-content-card">
+        <div class="selected-content-top">
           <p>Schedule Episode</p>
         </div>
 
-        <div class="selectedContentMiddle">
-          <div class="selectedContentInfoPane">
+        <div class="selected-content-middle">
+          <div class="selected-content-info-pane">
           <img
             :src="selectedContentPoster"
             :alt="selectedContentName"
             :title="selectedContentName"
-            class="selectedContentPoster"
+            class="selected-content-poster"
           />
-          <p x-text="selectedContentName" class="selectedContentName"></p>
+          <p x-text="selectedContentName" class="selected-content-name"></p>
         </div>
 
-        <div class="selectedContentDatePane">
-          <div class="selectEpisode">
+        <div class="selected-content-date-pane">
+          <div class="select-episode">
 
           </div>
 
-            <div class="inputRow">
+            <div class="input-row">
               <label for="seasons">Select an episode: </label>
           <select
               name="seasons"
-              class="seasonSelector"
+              class="season-selector"
               x-model="selectedEpisode"
               id="seasons"
             >
@@ -292,7 +292,7 @@
             </select>
               <label for="seriesDates">Select a date and time:</label>
               <input
-                class="dateInput"
+                class="date-input"
                 placeholder="M/D/YYYY HH:MM"
                 name="dates"
                 id="seriesDates"
@@ -310,17 +310,17 @@
             </div>
         </div>
       </div>
-        <div class="selectedContentBottom">
+        <div class="selected-content-bottom">
               <button
                 x-on:click="selectedContentId=''; selectedContentName='';
                   selectedContentPoster=''; contentIsSelected = false; contentIsSeries=false;"
-                class="backButton"
+                class="back-button"
               >
                 Go Back
               </button>
 
                 <button
-                class="submitButton"
+                class="submit-button"
                 x-on:click="scheduleShow(selectedDateTime, selectedSessionId, selectedEpisode, selectedContentName);
                       scheduleList = await getSchedule()"
               :disabled="!selectedDateTime || !selectedSessionId || !selectedEpisode"
