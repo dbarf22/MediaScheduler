@@ -36,11 +36,7 @@
     scheduleList = await getSchedule(); shows = await getLibraryShows(); console.log(sessions)"
   >
 
-    <template x-if="selectedSessionId === ''">
-      <div
-        class="selectScreenBackground"
-      ></div>
-    </template>
+
 
     <!-- NAV BAR --------------------------- -->
     <header class="navbar">
@@ -64,6 +60,12 @@
         </select>
       </div>
     </header>
+
+    <template x-if="selectedSessionId === ''">
+      <div class="noDeviceSelectedScreen">
+        <h1>Select a device to begin </h1>
+      </div>
+    </template>
 
     <template x-if="selectedSessionId !== ''">
       <!-- Load movies ids and posters --------------------- -->
@@ -90,18 +92,26 @@
 
         <div x-data="{showMovies : true}">
           <div class="mediaTypeSelector">
-            <h1
-              :class="showMovies ? 'selectedMediaTypeButton' : 'mediaTypeButton'"
+            <button type="button"
+              :class="showMovies ? 'mediaTypeButton selected' : 'mediaTypeButton'"
               x-on:click="showMovies = true"
             >
               Movies
-            </h1>
-            <h1
-              :class="!showMovies ? 'selectedMediaTypeButton' : 'mediaTypeButton'"
+            </button>
+
+            <button type="button"
+              :class="!showMovies ? 'mediaTypeButton selected' : 'mediaTypeButton'"
               x-on:click="showMovies = false"
             >
               Series
-            </h1>
+            </button>
+            <search >
+              <form class="mediaSearchBar">
+                <label> Search:</label>
+                <input type="search">
+                <button>Search</button>
+              </form>
+            </search>
           </div>
 
           <!-- POPULATED MOVIE CARDS ----------- -->

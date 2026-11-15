@@ -6,14 +6,14 @@ body {
   font-family: "Noto Sans", sans-serif;
   align-content: center;
   color: #d2d2d2;
-
 }
 
 .navbar {
   display: flex;
   flex-direction: row;
-  position: fixed;
-  height: 5vh;
+  position: sticky;
+  top: 0;
+  height: 64px;
   width: 100%;
   z-index: 4;
   justify-content: center;
@@ -25,9 +25,6 @@ body {
   color: #d2d2d2;
 }
 
-.navbarRow label {
-
-}
 
 .topInput {
   background-color: #202020;
@@ -38,8 +35,6 @@ body {
   text-align: center;
   font-family: inherit;
 }
-
-
 
 .scheduleList {
   display: grid;
@@ -66,22 +61,29 @@ body {
 .mediaTypeSelector {
   display: flex;
   justify-content: left;
+  align-items: center;
   gap: 40px;
   padding-inline: 4vw;
 }
 
-.selectedMediaTypeButton{
-  color: #d2d2d2;
-  border-radius: 30px;
-  border-color: transparent;
-  cursor: pointer;
-}
-
 .mediaTypeButton{
   color: #d2d2d233;
+  background: transparent;
   border-radius: 30px;
   border-color: transparent;
   cursor: pointer;
+  font-family: inherit;
+  font-size: 2em;
+  padding: 0;
+  border: none;
+}
+
+.mediaTypeButton.selected{
+  color: #d2d2d2;
+}
+
+.mediaSearchBar {
+  height: 100%;
 }
 
 .container {
@@ -190,13 +192,17 @@ body {
 }
 }
 
+.selectedContentTop, .selectedContentMiddle, .selectedContentBottom {
+  padding-inline: 2em;
+}
+
 .selectedContentTop {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   width: 100%;
   background-color: #292929;
-  padding: .7em;
+  padding-block: .7em;
 }
 
 .selectedContentTop p {
@@ -210,9 +216,9 @@ body {
   width: 100%;
   justify-content: space-around;
   background-color: #171717;
-  padding: .7em;
   gap: 1em;
   align-items: center;
+  padding-block: 1em;
 }
 
 @media (min-width: 1500px) {
@@ -292,8 +298,6 @@ body {
   padding-right: 10px;
 }
 
-
-
 .selectedContentBottom {
   display: flex;
   flex-direction: row;
@@ -301,7 +305,7 @@ body {
   background-color: #292929;
   gap: 20px;
   width: 100%;
-  padding: .7em;
+  padding-block: .7em;
 }
 
 .selectedContentBottom button {
@@ -341,10 +345,9 @@ ul {
 }
 
 
-
-.selectScreenBackground {
-  z-index: 2;
-  backdrop-filter: brightness(50%);
-  position: absolute;
-  inset: 0;
+.noDeviceSelectedScreen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 64px)
 }
