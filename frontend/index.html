@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:x-on="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
     <title>Scheduler</title>
@@ -14,17 +14,8 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://npmcdn.com/flatpickr/dist/themes/dark.css"
-    />
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="script.js"></script>
     <script
       defer
@@ -110,7 +101,7 @@
             </button>
 
             <search>
-              <form class="media-search-bar">
+              <form class="media-search-bar" x-on:submit.prevent="">
                 <label for="media-search">Search:</label>
                 <input type="search" id="media-search" />
                 <button>Search</button>
@@ -209,28 +200,41 @@
             <label for="dates">Select a date and time:</label>
             <input
               class="date-input"
-              placeholder="M/D/YYYY HH:MM"
               name="dates"
               id="dates"
-              type="text"
+              type="datetime-local"
               x-model="selectedDateTime"
-              x-init="dateTimePicker('#dates', dateStr => selectedDateTime = dateStr)"
+              :min="earliestDateTime()"
             />
+            <p x-show="showError" x-text="errorText" class="error-text"></p>
           </div>
         </div>
-
         <div class="selected-content-bottom">
           <button class="back-button" x-on:click="closeModal()">Go Back</button>
 
           <button
             class="submit-button"
-            x-on:click="if (await schedule(selectedDateTime, selectedSessionId, selectedContentId, selectedContentName)) {
-              closeModal(); scheduleList = await getSchedule() }"
-            :disabled="!selectedDateTime || !selectedSessionId"
+            x-on:click="isAwaitingSchedulePost = true;
+            clearError();
+
+            try {
+              if (isDateValid(selectedDateTime) && await schedule(selectedDateTime, selectedSessionId, selectedContentId, selectedContentName)) {
+                closeModal();
+                scheduleList = await getSchedule();
+              }
+            } catch (error) {
+              setError(error.message);
+            }
+            finally {
+              isAwaitingSchedulePost = false;
+            }"
+            :disabled="!isDateValid(selectedDateTime) || isAwaitingSchedulePost || !selectedDateTime || !selectedSessionId"
           >
             Submit
           </button>
+
         </div>
+
       </div>
 
       <!-- Series option -->
@@ -274,13 +278,13 @@
               <label for="seriesDates">Select a date and time:</label>
               <input
                 class="date-input"
-                placeholder="M/D/YYYY HH:MM"
                 name="dates"
                 id="seriesDates"
-                type="date"
+                type="datetime-local"
                 x-model="selectedDateTime"
-                x-init="dateTimePicker('#seriesDates', dateStr => selectedDateTime = dateStr)"
+                :min="earliestDateTime()"
               />
+              <p x-show="showError" x-text="errorText" class="error-text"></p>
             </div>
           </div>
         </div>
@@ -290,15 +294,29 @@
 
           <button
             class="submit-button"
-            x-on:click="if (await scheduleShow(selectedDateTime, selectedSessionId, selectedEpisode, selectedContentName)) {
-              closeModal(); scheduleList = await getSchedule() }"
-            :disabled="!selectedDateTime || !selectedSessionId || !selectedEpisode"
+            x-on:click="
+            isAwaitingSchedulePost = true;
+            clearError();
+
+            try {
+              if (isDateValid(selectedDateTime) && await scheduleShow(selectedDateTime, selectedSessionId, selectedEpisode, selectedContentName)) {
+                closeModal();
+                scheduleList = await getSchedule();
+              }
+            } catch (error) {
+              setError(error.message);
+            } finally {
+              isAwaitingSchedulePost = false;
+            }"
+            :disabled="!isDateValid(selectedDateTime) || isAwaitingSchedulePost || !selectedDateTime || !selectedSessionId || !selectedEpisode"
           >
             Submit
           </button>
         </div>
       </div>
     </div>
+
+
 
     <!-- todo: check that the date pickers still work after selecting multiple shows & movies -->
   </body>

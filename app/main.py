@@ -1,11 +1,14 @@
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import jellyfin_communicator
 
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-from datetime import datetime
+from apscheduler.jobstores.base import JobLookupError
+import requests
+from datetime import datetime, timezone
 from contextlib import asynccontextmanager
 
 # Stuff to initialize the sqlite db that holds jobs
@@ -23,14 +26,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# Cors stuff
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# If Jellyfin can't be reached (or times out), answer 502 Bad Gateway instead of crashing with a 500.
+@app.exception_handler(requests.RequestException)
+async def jellyfin_unreachable(request: Request, error: requests.RequestException):
+    return JSONResponse(status_code=502, content={"detail": "Couldn't reach Jellyfin. Is it running?"})
 
 # Models for bodies
 class ScheduleRequest(BaseModel):
@@ -50,44 +49,66 @@ class SeriesEpisodeRequest(BaseModel):
 app.frontend("/", directory="frontend")
 
 # API Calls
-@app.get("/sessions")
+# Every route below is registered on this router, so they all live under /api
+# (e.g. /api/sessions). That keeps them from ever clashing with frontend files.
+api = APIRouter(prefix="/api")
+
+@api.get("/sessions")
 async def get_sessions():
     return jellyfin_communicator.getActiveSessions()
 
-@app.get("/library")
+@api.get("/library")
 async def get_library_content():
     return jellyfin_communicator.getLibraryMovies()
 
-@app.get("/library/series")
+@api.get("/library/series")
 async def get_library_series():
     return jellyfin_communicator.getLibrarySeries()
 
-@app.get("/library/series/episodes")
+@api.get("/library/series/episodes")
 async def get_series_episodes(seriesId: str):
     return jellyfin_communicator.getLibrarySeriesEpisodes(seriesId)
 
-@app.post("/schedule/show")
-async def scheduleContent(body: ScheduleRequest):
+def parseFutureDate(date: str) -> datetime:
+    """Turns the request's date string into a datetime, or raises a 400 explaining what's wrong."""
+    try:
+        convertedDate = datetime.fromisoformat(date)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Date isn't a valid ISO 8601 date")
+    if convertedDate.tzinfo is None:
+        raise HTTPException(status_code=400, detail="Date must include a timezone")
+    if convertedDate < datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="Date must be in the future")
+    return convertedDate
+
+@api.post("/schedule/show")
+async def scheduleContentShow(body: ScheduleRequest):
     if body.contentId == '' or body.sessionId == '' or body.date == '':
-        return {"Error" : "Please provide all required fields"}
-    convertedDate = datetime.fromisoformat(body.date)
+        raise HTTPException(status_code=400, detail="Please provide all required fields")
+    convertedDate = parseFutureDate(body.date)
 
     query = jellyfin_communicator.getEpisodeName(body.contentId)
+
+    # Jellyfin ignores a malformed id and returns other items, so also check we really got an episode.
+    if not query or query[0].get("Type") != "Episode":
+        raise HTTPException(status_code=404, detail="No episode with that id")
+
     episode = query[0]
     title = f"{episode["SeriesName"]}: S{episode["ParentIndexNumber"]}E{episode["IndexNumber"]}"
 
     scheduler.add_job(play, 'date', run_date=convertedDate, args=[body.contentId, body.sessionId, title])
     return {"Success" : "Item added to schedule successfully"}
 
-@app.post("/schedule")
-async def scheduleContentShow(body: ScheduleRequest):
+@api.post("/schedule")
+async def scheduleContent(body: ScheduleRequest):
     if body.contentId == '' or body.sessionId == '' or body.date == '':
-        return {"Error" : "Please provide all required fields"}
-    convertedDate = datetime.fromisoformat(body.date)
+        raise HTTPException(status_code=400, detail="Please provide all required fields")
+    convertedDate = parseFutureDate(body.date)
+
     scheduler.add_job(play, 'date', run_date=convertedDate, args=[body.contentId, body.sessionId, body.contentName])
     return {"Success" : "Item added to schedule successfully"}
 
-@app.get("/schedule")
+@api.get("/schedule")
 async def getSchedule():
     jobList = []
     for job in scheduler.get_jobs():
@@ -102,11 +123,16 @@ async def getSchedule():
         })
     return jobList
 
-@app.delete("/schedule")
+@api.delete("/schedule", status_code=204)
 async def deleteSchedule(body: DeleteScheduleRequest):
     if body.jobId == '':
-        return {"Error" : "Please provide a job id"}
-    scheduler.remove_job(body.jobId)
+        raise HTTPException(status_code=400, detail="Please provide a job id")
+    try:
+        scheduler.remove_job(body.jobId)
+    except JobLookupError:
+        raise HTTPException(status_code=404, detail="No scheduled item with that id")
+
+app.include_router(api)
 
 # Non-api methods
 

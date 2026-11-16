@@ -1,18 +1,3 @@
-// Attaches a date+time picker to the input matching `selector`.
-// `whenDateChosen` is a function that gets called with the chosen value
-// as an ISO (UTC) string, or '' when the picker is cleared.
-function dateTimePicker(selector, whenDateChosen) {
-    return flatpickr(selector, {
-        altInput: true,
-        altFormat: 'n/j/Y, h:i K',
-        enableTime: true,
-        dateFormat: 'Z',
-        minDate: 'today',
-        // flatpickr's own option: it calls this function whenever the date changes
-        onChange: (selectedDates, dateStr) => whenDateChosen(dateStr)
-    });
-}
-
 // The page's Alpine component. index.html uses it with <body x-data="scheduler">.
 // It has to be registered on 'alpine:init', which Alpine fires just before it
 // scans the page (this script loads first; Alpine itself is deferred).
@@ -33,9 +18,15 @@ document.addEventListener('alpine:init', () => {
         selectedEpisode: '',
         selectedSeriesEpisodes: [],
 
+        showError: false,
+        errorText: '',
+
         // Modal state
         contentIsSelected: false,
         contentIsSeries: false,
+
+        // awaiting schedule posting
+        isAwaitingSchedulePost: false,
 
         // Alpine calls init() automatically when the component starts
         async init() {
@@ -45,6 +36,38 @@ document.addEventListener('alpine:init', () => {
             this.shows = await getLibraryShows();
         },
 
+        // Set an error message
+        setError(message) {
+            this.showError = true;
+            this.errorText = message;
+        },
+
+        clearError() {
+            this.showError = false;
+            this.errorText = '';
+        },
+
+        // Earliest value the date inputs allow: midnight today, in the
+        // "YYYY-MM-DDTHH:MM" local format that <input type="datetime-local"> uses.
+        // (Same rule as before: earlier days are blocked, earlier times today are not.)
+        earliestDateTime() {
+            const now = new Date();
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T00:00`;
+        },
+
+        isDateValid(date) {
+            const inputTime = new Date(date);
+            const now = new Date();
+
+            if (!date){
+                return false;
+            }
+
+            return inputTime > now;
+
+        },
+
         closeModal() {
             this.selectedContentId = '';
             this.selectedContentName = '';
@@ -52,15 +75,27 @@ document.addEventListener('alpine:init', () => {
             this.selectedEpisode = '';
             this.contentIsSelected = false;
             this.contentIsSeries = false;
-            // clearing flatpickr also resets selectedDateTime via its onChange
-            ['dates', 'seriesDates'].forEach(id => document.getElementById(id)?._flatpickr?.clear());
-            this.selectedDateTime = '';
+            this.selectedDateTime = ''; // x-model clears the date inputs too
+            this.clearError();
         },
     }));
 });
 
+const API_BASE = '/api';
+
+// Builds an Error from a failed response, using FastAPI's {"detail": "..."} message when there is one.
+async function errorFromResponse(response) {
+    try {
+        const body = await response.json();
+        if (typeof body.detail === 'string') return new Error(body.detail);
+    } catch {
+        // body wasn't JSON; fall through to the generic message
+    }
+    return new Error(`Response: ${response.status}`);
+}
+
 async function getLibrary() {
-    const url = "http://localhost:8000/library";
+    const url = API_BASE + "/library";
     try {
         const response = await fetch(url, {
             headers: {
@@ -77,7 +112,7 @@ async function getLibrary() {
 }
 
 async function getLibraryShows() {
-    const url = "http://localhost:8000/library/series";
+    const url = API_BASE + "/library/series";
     try {
         const response = await fetch(url, {
             headers: {
@@ -94,7 +129,7 @@ async function getLibraryShows() {
 }
 
 async function getSessions() {
-    const url = "http://localhost:8000/sessions";
+    const url = API_BASE + "/sessions";
     try {
         const response = await fetch(url, {
             headers: {
@@ -111,7 +146,7 @@ async function getSessions() {
 }
 
 async function getSeriesEpisodes(seriesId) {
-    const url = "http://localhost:8000/library/series/episodes?seriesId=" + seriesId;
+    const url = API_BASE + "/library/series/episodes?seriesId=" + seriesId;
     try {
         const response = await fetch(url, {
             headers: {
@@ -147,7 +182,7 @@ async function getSeriesEpisodes(seriesId) {
 }
 
 function playContent(sessionId, contentId, contentName) {
-    const url = 'http://localhost:8000/play?contentId=' + contentId +'&sessionId=' + sessionId;
+    const url = API_BASE + '/play?contentId=' + contentId +'&sessionId=' + sessionId;
     fetch(url, {
         method: 'POST',
         headers: {
@@ -157,45 +192,45 @@ function playContent(sessionId, contentId, contentName) {
 }
 
 // Posts a schedule request. Resolves to true only if the job was actually added.
-// (The backend answers 200 with an "Error" key for bad input, so check the body too.)
+// (Bad input comes back as an error status with a "detail" message.)
 async function postSchedule(url, date, sessionId, contentId, contentName) {
-    try {
-        const response = await fetch(url, {
+        let response
+        try {
+            response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                date: date,
+                // The input gives local time with no timezone ("2026-11-20T19:00").
+                // new Date() reads it as local time; toISOString() sends it as UTC.
+                date: new Date(date).toISOString(),
                 sessionId: sessionId,
                 contentId: contentId,
                 contentName: contentName
             })
         })
-        if (!response.ok) {
-            throw new Error(`Response: ${response.status}`);
+        } catch {
+            throw new Error("Error reaching the Python API. Check connection")
         }
-        const result = await response.json();
-        if (result.Error) {
-            throw new Error(result.Error);
+
+        if (!response.ok) {
+            throw await errorFromResponse(response);
         }
         return true;
-    } catch (error) {
-        console.error(error.message)
-        return false;
-    }
+
 }
 
 function schedule(date, sessionId, contentId, contentName) {
-    return postSchedule('http://localhost:8000/schedule', date, sessionId, contentId, contentName);
+    return postSchedule(API_BASE + '/schedule', date, sessionId, contentId, contentName);
 }
 
 function scheduleShow(date, sessionId, contentId, contentName) {
-    return postSchedule('http://localhost:8000/schedule/show', date, sessionId, contentId, contentName);
+    return postSchedule(API_BASE + '/schedule/show', date, sessionId, contentId, contentName);
 }
 
 async function getSchedule()  {
-    const url = 'http://localhost:8000/schedule';
+    const url = API_BASE + '/schedule';
     try {
         const response = await fetch(url, {
             headers: {
@@ -212,8 +247,7 @@ async function getSchedule()  {
 }
 
 async function removeFromSchedule(jobId) {
-    const url = 'http://localhost:8000/schedule';
-    try {
+    const url = API_BASE + '/schedule';
         const response = await fetch(url, {
             method: 'DELETE',
             headers: {
@@ -224,9 +258,6 @@ async function removeFromSchedule(jobId) {
             })
         })
         if (!response.ok) {
-            throw new Error(`Response: ${response.status}`);
+            throw await errorFromResponse(response);
         }
-    } catch (error) {
-        console.log(error.message)
-    }
 }

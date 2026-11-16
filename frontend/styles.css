@@ -13,6 +13,8 @@
   --text-muted: #999;
   --text-dim: #d2d2d233;
 
+  --text-error: #ff5252;
+
   --accent: #00a4dc;
   --accent-glow: #00a4dc50;
 
@@ -51,6 +53,11 @@ body {
   border-radius: 0.2em;
   padding: 0.4em 0.25em;
   font-size: 110%;
+}
+
+.date-input {
+  /* Makes the browser's built-in picker (icon + popup) use its dark style */
+  color-scheme: dark;
 }
 
 .date-input:focus {
@@ -370,4 +377,8 @@ body {
 .submit-button:disabled {
   background-color: var(--neutral-button);
   cursor: not-allowed;
+}
+
+.error-text {
+  color: var(--text-error);
 }
