@@ -26,6 +26,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+# TEMP: lets index.html opened as a raw file (origin "null") call the API. Remove along with the hardcoded API_BASE.
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
 # If Jellyfin can't be reached (or times out), answer 502 Bad Gateway instead of crashing with a 500.
 @app.exception_handler(requests.RequestException)
 async def jellyfin_unreachable(request: Request, error: requests.RequestException):
@@ -94,7 +97,15 @@ async def scheduleContentShow(body: ScheduleRequest):
         raise HTTPException(status_code=404, detail="No episode with that id")
 
     episode = query[0]
-    title = f"{episode["SeriesName"]}: S{episode["ParentIndexNumber"]}E{episode["IndexNumber"]}"
+    seriesName = episode.get("SeriesName")
+    season = episode.get("ParentIndexNumber")
+    number = episode.get("IndexNumber")
+    name = episode.get("Name")
+
+    if season is not None and number is not None:
+        title = f"{seriesName}: S{season}E{number}"
+    else:
+        title = f"{seriesName}: {name}"
 
     scheduler.add_job(play, 'date', run_date=convertedDate, args=[body.contentId, body.sessionId, title])
     return {"Success" : "Item added to schedule successfully"}

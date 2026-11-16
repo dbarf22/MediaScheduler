@@ -28,6 +28,13 @@
    Base
    ========================================================================== */
 
+/* Width/height include padding and border, so width: 100% never overflows */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -38,16 +45,14 @@ body {
 
 /* Shared look for the dark text inputs / selects */
 .top-input,
-.date-input,
-.select-episode select {
+.date-input {
   background-color: var(--surface);
   color: var(--text);
   text-align: center;
   font-family: inherit;
 }
 
-.date-input,
-.select-episode select {
+.date-input {
   background-color: var(--surface-raised);
   border: 0.16em solid var(--surface-raised);
   border-radius: 0.2em;
@@ -65,8 +70,7 @@ body {
 }
 
 /* Shared label style inside the schedule forms */
-.selected-content-date-pane label,
-.select-episode label {
+.selected-content-date-pane label {
   text-wrap: nowrap;
   padding-right: 10px;
 }
@@ -239,7 +243,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  container-type: inline-size;
 }
 
 /* Dimmed, clickable backdrop behind the modal card */
@@ -247,22 +250,51 @@ body {
   position: absolute;
   inset: 0;
   z-index: 2;
-  backdrop-filter: brightness(50%);
+  /* A see-through black layer. (backdrop-filter stops working while a parent
+     is fading, so the dimming would pop in at the end of the animation.) */
+  background-color: rgb(0 0 0 / 50%);
+}
+
+/* Open/close animation. Alpine adds these classes during x-transition:
+   - modal-hidden: the "invisible" end of the animation (start of opening, end of closing)
+   - modal-entering / modal-leaving: present for the whole animation, so the
+     browser transitions between hidden and normal */
+.modal-entering,
+.modal-entering .selected-content-card {
+  transition: opacity 220ms ease-out, transform 220ms ease-out;
+}
+
+.modal-leaving,
+.modal-leaving .selected-content-card {
+  transition: opacity 160ms ease-in, transform 160ms ease-in;
+}
+
+.modal-hidden {
+  opacity: 0;
+}
+
+.modal-hidden .selected-content-card {
+  transform: translateY(16px) scale(0.97);
+}
+
+/* Respect the OS "reduce motion" setting: no animation at all */
+@media (prefers-reduced-motion: reduce) {
+  .modal-entering,
+  .modal-entering .selected-content-card,
+  .modal-leaving,
+  .modal-leaving .selected-content-card {
+    transition: none;
+  }
 }
 
 .selected-content-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   z-index: 3;
-  width: 70vw;
-}
-
-@media (min-width: 1500px) {
-  .selected-content-card {
-    width: 30vw;
-  }
+  width: min(900px, 100% - 32px);
+  max-height: calc(100vh - 32px);
+  background-color: var(--surface-sunken);
+  overflow: hidden;
 }
 
 /* Top bar / middle / bottom bar */
@@ -295,9 +327,13 @@ body {
   gap: 1em;
   padding-block: 1em;
   background-color: var(--surface-sunken);
+  /* Scroll here when the card hits its max-height. min-height: 0 lets this
+     flex item shrink below its content so the scrolling can happen. */
+  min-height: 0;
+  overflow-y: auto;
 }
 
-@media (min-width: 1500px) {
+@media (min-width: 1000px) {
   .selected-content-middle {
     flex-direction: row;
   }
@@ -342,13 +378,100 @@ body {
   flex-direction: column;
   justify-content: center;
   width: 100%;
+  min-width: 0;
 }
 
-.select-episode {
+.season-episode-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+  margin-bottom: 1em;
+}
+
+/* Season tabs: a row of text tabs over a thin divider line */
+.season-row {
   display: flex;
   flex-direction: row;
-  padding-right: 10px;
+  gap: 1.5em;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--surface-raised);
+  scrollbar-width: none;
 }
+
+.season-button {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 0.4em 0;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.season-button:hover {
+  color: var(--text);
+}
+
+.season-button-selected {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+.episode-column {
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  overflow-y: auto;
+  background-color: var(--bg);
+  border: 1px solid var(--surface-raised);
+  scrollbar-width: thin;
+  scrollbar-color: var(--neutral-button) transparent;
+}
+
+.episode-button {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75em;
+  width: 100%;
+  padding: 0.6em 0.9em;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--surface);
+  border-left: 3px solid transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.episode-button:hover {
+  background-color: var(--surface);
+}
+
+.episode-button-selected,
+.episode-button-selected:hover {
+  background-color: var(--accent-glow);
+  border-left-color: var(--accent);
+}
+
+.episode-number {
+  flex-shrink: 0;
+  min-width: 2.5em;
+  color: var(--text-muted);
+  font-size: 0.85em;
+  font-variant-numeric: tabular-nums; 
+}
+
+.episode-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 
 /* ==========================================================================
    Buttons

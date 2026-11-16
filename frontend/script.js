@@ -17,6 +17,7 @@ document.addEventListener('alpine:init', () => {
         selectedContentPoster: '',
         selectedEpisode: '',
         selectedSeriesEpisodes: [],
+        selectedSeason: '',
 
         showError: false,
         errorText: '',
@@ -69,19 +70,31 @@ document.addEventListener('alpine:init', () => {
         },
 
         closeModal() {
+            this.contentIsSelected = false;
+            // Wait for the close animation to finish before clearing everything,
+            // so the poster, episodes and date don't vanish while it fades out.
+            // (Skipped if the modal was reopened in the meantime.)
+            setTimeout(() => {
+                if (!this.contentIsSelected) this.resetModal();
+            }, 200);
+        },
+
+        resetModal() {
             this.selectedContentId = '';
             this.selectedContentName = '';
             this.selectedContentPoster = '';
             this.selectedEpisode = '';
-            this.contentIsSelected = false;
             this.contentIsSeries = false;
-            this.selectedDateTime = ''; // x-model clears the date inputs too
+            this.selectedDateTime = '';
             this.clearError();
+            this.selectedSeason = '';
+
         },
     }));
 });
 
-const API_BASE = '/api';
+// TEMP: hardcoded so index.html works when opened as a raw file. Change back to '/api' later.
+const API_BASE = 'http://localhost:8000/api';
 
 // Builds an Error from a failed response, using FastAPI's {"detail": "..."} message when there is one.
 async function errorFromResponse(response) {
@@ -172,7 +185,6 @@ async function getSeriesEpisodes(seriesId) {
                 name: episode.Name
             })
         });
-        console.log(Array.from(seasonMap.values()))
         return Array.from(seasonMap.values())
 
 
@@ -180,6 +192,7 @@ async function getSeriesEpisodes(seriesId) {
         console.error(error.message)
     }
 }
+
 
 function playContent(sessionId, contentId, contentName) {
     const url = API_BASE + '/play?contentId=' + contentId +'&sessionId=' + sessionId;

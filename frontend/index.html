@@ -150,7 +150,8 @@
                   selectedContentId = show.Id;
                   selectedContentName = show.Name;
                   selectedContentPoster = show.posterLink;
-                  selectedSeriesEpisodes = await getSeriesEpisodes(selectedContentId)"
+                  selectedSeriesEpisodes = await getSeriesEpisodes(selectedContentId);
+                  selectedSeason = selectedSeriesEpisodes?.[0]"
               >
                 <img
                   class="poster"
@@ -174,9 +175,16 @@
     </template>
 
     <!-- ======================================================================
-         SCHEDULE MODAL (movie option and series option share one backdrop)
+         SCHEDULE MODAL
          ====================================================================== -->
-    <div x-show="contentIsSelected" class="modal">
+    <div
+      x-show="contentIsSelected"
+      class="modal"
+      x-transition:enter="modal-entering"
+      x-transition:enter-start="modal-hidden"
+      x-transition:leave="modal-leaving"
+      x-transition:leave-end="modal-hidden"
+    >
       <div class="modal-backdrop" x-on:click="closeModal()"></div>
 
       <!-- Movie option -->
@@ -255,37 +263,34 @@
           </div>
 
           <div class="selected-content-date-pane">
-            <div class="select-episode"></div>
-
-            <div class="input-row">
-              <label for="seasons">Select an episode: </label>
-              <select
-                class="season-selector"
-                name="seasons"
-                id="seasons"
-                x-model="selectedEpisode"
-              >
-                <option value="">--choose--</option>
-                <template x-for="season in selectedSeriesEpisodes">
-                  <optgroup :label="'Season ' + season.season">
-                    <template x-for="episode in season.episodes">
-                      <option :value="episode.id" x-text="episode.name"></option>
-                    </template>
-                  </optgroup>
+            <div class="season-episode-selector">
+              <div class="season-row">
+                <template x-for="season in selectedSeriesEpisodes" >
+                  <button x-text="'Season ' + season.season" type="button" x-on:click="selectedSeason = season"
+                    :class="selectedSeason != season ? 'season-button' : 'season-button season-button-selected'"></button>
                 </template>
-              </select>
-
-              <label for="seriesDates">Select a date and time:</label>
-              <input
-                class="date-input"
-                name="dates"
-                id="seriesDates"
-                type="datetime-local"
-                x-model="selectedDateTime"
-                :min="earliestDateTime()"
-              />
-              <p x-show="showError" x-text="errorText" class="error-text"></p>
+              </div>
+              <div class="episode-column">
+                <template x-for="episode in selectedSeason?.episodes ?? []" >
+                  <button type="button" x-on:click="selectedEpisode = episode.id"
+                          :class="selectedEpisode != episode.id ? 'episode-button' : 'episode-button episode-button-selected' "  >
+                    <span class="episode-number" x-text="episode.episode != null ? 'E' + episode.episode : ''"></span>
+                    <span class="episode-name" x-text="episode.name"></span>
+                  </button>
+                </template>
+              </div>
             </div>
+
+            <label for="seriesDates">Select a date and time:</label>
+            <input
+              class="date-input"
+              name="dates"
+              id="seriesDates"
+              type="datetime-local"
+              x-model="selectedDateTime"
+              :min="earliestDateTime()"
+            />
+            <p x-show="showError" x-text="errorText" class="error-text"></p>
           </div>
         </div>
 
@@ -318,6 +323,5 @@
 
 
 
-    <!-- todo: check that the date pickers still work after selecting multiple shows & movies -->
   </body>
 </html>
