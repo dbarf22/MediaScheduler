@@ -15,6 +15,32 @@ in Alpine, since the process is much more HTML forward, akin to Svelte, than Rea
 also my first time designing anything with CSS, and there's definitely much room for improvement, but I am happy with how
 it turned out!
 
+# Tests
+
+The tests run offline against a fake Jellyfin, so they never play anything on a real TV and never touch
+`jobs.sqlite`. One-time setup:
+
+```
+pip install -r requirements-dev.txt
+playwright install chromium
+```
+
+Then, from the project root:
+
+```
+pytest                           # everything (~10 seconds)
+pytest tests/test_api.py         # backend only (~2 seconds, no browser)
+pytest tests/test_frontend.py    # frontend only, in a headless browser
+pytest -k episode                # only tests with "episode" in the name
+pytest tests/test_frontend.py --headed --slowmo 500   # watch the browser tests run
+```
+
+- `tests/test_api.py` calls the FastAPI routes: validation, status codes, episode titles, and that jobs
+  really fire and play.
+- `tests/test_frontend.py` clicks through the real page with the `/api` calls faked: picking a device,
+  scheduling movies and episodes, errors, closing the modal, and removing items. It needs internet,
+  because Alpine is loaded from a CDN.
+
 # Screenshots
 
 ![Movies menu](movies.png)
