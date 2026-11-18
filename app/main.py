@@ -84,11 +84,19 @@ def parseFutureDate(date: str) -> datetime:
         raise HTTPException(status_code=400, detail="Date must be in the future")
     return convertedDate
 
+def ensureTimeSlotFree(sessionId: str, runDate: datetime):
+    # Raises a 409 if this device already has something scheduled at this exact time.
+    for job in scheduler.get_jobs():
+        # job.args is [contentId, sessionId, title]
+        if job.args[1] == sessionId and job.trigger.run_date == runDate:
+            raise HTTPException(status_code=409, detail=f"This device already has \"{job.args[2]}\" scheduled at that time")
+
 @api.post("/schedule/show")
 async def scheduleContentShow(body: ScheduleRequest):
     if body.contentId == '' or body.sessionId == '' or body.date == '':
         raise HTTPException(status_code=400, detail="Please provide all required fields")
     convertedDate = parseFutureDate(body.date)
+    ensureTimeSlotFree(body.sessionId, convertedDate)
 
     query = jellyfin_communicator.getEpisodeName(body.contentId)
 
@@ -115,6 +123,7 @@ async def scheduleContent(body: ScheduleRequest):
     if body.contentId == '' or body.sessionId == '' or body.date == '':
         raise HTTPException(status_code=400, detail="Please provide all required fields")
     convertedDate = parseFutureDate(body.date)
+    ensureTimeSlotFree(body.sessionId, convertedDate)
 
     scheduler.add_job(play, 'date', run_date=convertedDate, args=[body.contentId, body.sessionId, body.contentName])
     return {"Success" : "Item added to schedule successfully"}

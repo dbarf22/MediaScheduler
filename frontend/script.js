@@ -35,6 +35,13 @@ document.addEventListener('alpine:init', () => {
             this.movies = await getLibrary();
             this.scheduleList = await getSchedule();
             this.shows = await getLibraryShows();
+
+            // Re-fetch the schedule every 15 seconds, so items disappear once they've played.
+            // If a request fails, keep showing the last list instead of blanking it.
+            setInterval(async () => {
+                const list = await getSchedule();
+                if (list) this.scheduleList = list;
+            }, 15_000);
         },
 
         // Set an error message
@@ -93,8 +100,7 @@ document.addEventListener('alpine:init', () => {
     }));
 });
 
-// TEMP: hardcoded so index.html works when opened as a raw file. Change back to '/api' later.
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = '/api';
 
 // Builds an Error from a failed response, using FastAPI's {"detail": "..."} message when there is one.
 async function errorFromResponse(response) {
